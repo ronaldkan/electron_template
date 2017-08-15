@@ -1,0 +1,63 @@
+<div style="padding-top: 60px; background-color: #F2F2F2; height: 100%;">
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col-md-4">
+              <div class="panel panel-default" style="margin-bottom: 5px;">
+                  <div class="panel-body">
+                    Table: {{table}}
+                  </div>
+              </div>
+              <div id="orderList" class="panel panel-default">
+                  <div class="panel-body">
+                    <table class="table table-condensed">
+                      <tbody>
+                        <tr ng-repeat="(id, order) in currentOrders">
+                          <td>{{order.name}}</td>
+                          <td class="text-center">{{order.quantity}}</td>
+                          <td class="text-right">${{order.price}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+              </div>
+              <div class="panel panel-default">
+                  <div class="panel-body">
+                    Total: ${{totalAmount}}
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-8">
+            <div class="row no-gutter">
+            	<div class="col-md-2">
+            		<div ng-repeat="category in categories" class="panel panel-default" style="margin-bottom: 0px;">
+	                  	<div class="panel-body categoryPanel">
+		                    {{category}}
+	                  	</div>
+	              	</div>
+            	</div>
+            	<div class="col-md-10">
+            		<div id="itemList" class="container-fluid">
+            			<div class="row">
+            				<div ng-repeat="(id, item) in currentItems" class="no-gutter">
+	            				<div class="col-md-3">
+	            					<div id="{{item.name}}" ng-click="vm.itemClicked($event)" class="panel panel-default itemPanel" style="margin-bottom: 0px;">
+						              	<div class="panel-body">
+						                    {{item.name}}<br>{{item.secondary}}
+						              	</div>
+						          	</div>
+	            				</div>
+	            				<div ng-if="vm.checkItemLoop($index)" class="clearfix"></div>
+            				</div>
+            			</div>
+            		</div>
+            	</div>
+            </div>
+            <!-- <div class="row" style="margin-top: 5px;">
+			    <div class="col-sm-12 text-center">
+			        <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Quantity</button>
+			         <button class="btn btn-danger btn-md center-block" style="width: 100px; height: 50px;">Free</button>
+			     </div>
+			</div> -->
+      </div>
+  </div>
+</div>

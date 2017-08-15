@@ -1,9 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel='stylesheet' href='/stylesheets/bootstrap.css' />
+	<link rel='stylesheet' href='/stylesheets/font-awesome.css' />
+	<link rel='stylesheet' href='/stylesheets/main.css' />
+	<link rel='stylesheet' href='/stylesheets/process.css' />
+	<script type="text/javascript" src="/javascripts/lib/angular.js">
+	</script>
+	<script type="text/javascript" src="/javascripts/lib/angular-ui-router.js">
+	</script>
+	<script type="text/javascript" src="/javascripts/lib/jquery.js">
+	</script>
+	<script type="text/javascript" src="/javascripts/lib/ui-bootstrap.js">
+	</script>
+	<script type="text/javascript" src="/javascripts/lib/bootstrap.js">
+	</script>
+	<script type="text/javascript" src="/javascripts/lib/lodash.js">
+	</script>
+	<script type="text/javascript" src="/javascripts/mainApp.js"></script>
+	<script type="text/javascript" src="/javascripts/floorController.js"></script>
+	<script type="text/javascript" src="/javascripts/orderController.js"></script>
+	<script type="text/javascript" src="/javascripts/menuModel.js"></script>
 	<title>Hello</title>
 </head>
-<body>
-<h1>Wasssuppp?</h1>
+<body ng-app="mainApp" ng-controller="mainController as ctrl">
+<nav class="navbar navbar-default navbar-fixed-top navbar-custom" role="navigation">
+	<div class="navbar-center navbar-brand" href="#"><a class="navbar-brand">Brand</a></div>
+	<!-- Collect the nav links, forms, and other content for toggling -->
+	<div class="collapse navbar-collapse" id="navbar-collapse-1" style="padding-right: 15px;">
+		<ul class="nav navbar-nav navbar-right">
+			<li><a ui-sref="admin">Home</a></li>
+			<li><a ui-sref="floor">Floor</a></li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else here</a></li>
+					<li class="divider"></li>
+					<li><a href="#">Separated link</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</nav>
+	<ui-view></ui-view>
 </body>
 </html>

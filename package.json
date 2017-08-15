@@ -11,8 +11,8 @@
     "debug": "~2.6.3",
     "ejs": "^2.5.7",
     "electron": "^1.7.5",
-    "electron-connect": "^0.6.2",
     "express": "~4.15.2",
+    "express-livereload": "0.0.24",
     "jade": "~1.11.0",
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2"

@@ -11,14 +11,14 @@ let mainWindow;
 
 app.on('window-all-closed', function() {
 	if (process.platform != 'darwin') {
-		
+		app.quit();
 	}
 });
 
 app.on('ready', function() {
 	mainWindow = new BrowserWindow({width: 800, height: 600});
 	mainWindow.loadURL('http://127.0.0.1:3000');
-
+	mainWindow.maximize()
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});
