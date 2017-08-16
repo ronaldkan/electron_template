@@ -19,6 +19,10 @@ app.on('ready', function() {
 	mainWindow = new BrowserWindow({width: 800, height: 600});
 	mainWindow.loadURL('http://127.0.0.1:3000');
 	mainWindow.maximize()
+
+	// Open the DevTools.
+  	mainWindow.webContents.openDevTools()
+
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});

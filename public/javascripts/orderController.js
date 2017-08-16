@@ -1,16 +1,18 @@
 (function() {
 	var app = angular.module('mainApp')
 
+	app.filter('priceDisplay', function() {
+        return function (input) {
+            return parseFloat(input).toFixed(2);
+        };
+    });
+
 	app.controller('orderController', ['$scope', '$http', '$state', '$stateParams', 'menuModel', function($scope, $http, $state, $stateParams, menuModel) {
 		var controller = this;
 		var tableId = $stateParams.tableId;
-		$scope.categories = ['Platter', 'Meat Delight', 'Seafood', 'Vegetable', 'Sides'];
-		$scope.platter = 
-		{
-			'Platter for 4': {'name': 'Platter for 4', 'secondary':'四人套餐', 'price': 39.90},
-			'Platter for 2': {'name': 'Platter for 2', 'secondary': '二人套餐', 'price': 29.90}
-
-		};
+		$scope.selectedAll = false;
+		$scope.categories = menuModel.categories;
+		$scope.platter = menuModel.platter;
 		$scope.currentItems = $scope.platter;
 		$scope.currentOrders = {};
 		$scope.table = tableId;
@@ -28,13 +30,57 @@
 				$scope.totalAmount += $scope.currentOrders[itemName]['price'];
 				$scope.totalAmount = _.round($scope.totalAmount, 2);
 			}
-			console.log(item);
 		};
 
 		controller.checkItemLoop = function(index) {
 			if (index % 3 === 0 && index !== 0)
 				return true
 			return false
-		}
+		};
+
+		controller.categoryClicked = function($event) {
+			var category = $event.currentTarget.id;
+			if (category === 'Meat Delight')
+				$scope.currentItems = menuModel.meat;
+			else
+				$scope.currentItems = menuModel.platter;
+		};
+
+		controller.orderClicked = function($event) {
+			var target = $event.currentTarget;
+			itemName = target.children[0].id;
+			$('.orderRow').each(function() {
+				$(this).removeClass('active');
+			});
+			target.classList.add('active');
+		};
+
+		controller.selectAllRow = function() {
+			if ($scope.selectedAll === false) {
+				$('.orderRow').each(function() {
+					$(this).addClass('active');
+				});
+				$scope.selectedAll = true;
+			} else {
+				$('.orderRow').each(function() {
+					$(this).removeClass('active');
+				});
+				$scope.selectedAll = false;
+			}
+			
+		};
+
+		controller.deleteRow = function() {
+			$('.orderRow.active').each(function() {
+				var itemName = $(this)[0].children[0].id;
+				var itemDetails = $scope.currentOrders[itemName];
+				var price = itemDetails['price'];
+				var quantity = itemDetails['quantity'];
+				$scope.currentOrders = _.omit($scope.currentOrders, [itemName]);
+				$scope.totalAmount -= quantity * price;
+				$scope.totalAmount = _.round($scope.totalAmount, 2);
+				$(this)[0].remove();
+			});
+		};
 	}]);
 })();

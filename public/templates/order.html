@@ -9,12 +9,12 @@
               </div>
               <div id="orderList" class="panel panel-default">
                   <div class="panel-body">
-                    <table class="table table-condensed">
+                    <table class="table table-hover">
                       <tbody>
-                        <tr ng-repeat="(id, order) in currentOrders">
-                          <td>{{order.name}}</td>
-                          <td class="text-center">{{order.quantity}}</td>
-                          <td class="text-right">${{order.price}}</td>
+                        <tr class="orderRow" ng-repeat="(id, order) in currentOrders" ng-click="vm.orderClicked($event)">
+                          <td width="60%" id="{{order.name}}">{{order.name}}</td>
+                          <td width="20%">{{order.quantity}}</td>
+                          <td width="20%" class="text-right">${{order.price | priceDisplay}}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -22,42 +22,46 @@
               </div>
               <div class="panel panel-default">
                   <div class="panel-body">
-                    Total: ${{totalAmount}}
+                    Total: ${{totalAmount | priceDisplay}}
                   </div>
               </div>
           </div>
           <div class="col-md-8">
             <div class="row no-gutter">
             	<div class="col-md-2">
-            		<div ng-repeat="category in categories" class="panel panel-default" style="margin-bottom: 0px;">
+                <div ng-repeat="category in categories">
+            		  <div id="{{category}}" ng-click="vm.categoryClicked($event)" class="panel panel-default" style="margin-bottom: 0px;">
 	                  	<div class="panel-body categoryPanel">
 		                    {{category}}
 	                  	</div>
 	              	</div>
+                </div>
             	</div>
             	<div class="col-md-10">
             		<div id="itemList" class="container-fluid">
             			<div class="row">
             				<div ng-repeat="(id, item) in currentItems" class="no-gutter">
-	            				<div class="col-md-3">
+	            				<div class="col-md-4">
+                        <div ng-if="vm.checkItemLoop($index)" class="clearfix"></div>
 	            					<div id="{{item.name}}" ng-click="vm.itemClicked($event)" class="panel panel-default itemPanel" style="margin-bottom: 0px;">
 						              	<div class="panel-body">
-						                    {{item.name}}<br>{{item.secondary}}
+						                    {{item.name}}<br>{{item.secondary}}<br>${{item.price | priceDisplay}}
 						              	</div>
 						          	</div>
 	            				</div>
-	            				<div ng-if="vm.checkItemLoop($index)" class="clearfix"></div>
             				</div>
             			</div>
             		</div>
             	</div>
             </div>
-            <!-- <div class="row" style="margin-top: 5px;">
+            <div class="row" style="margin-top: 5px;">
 			    <div class="col-sm-12 text-center">
+            <button ng-click="vm.selectAllRow()" class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Select All</button>
 			        <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Quantity</button>
-			         <button class="btn btn-danger btn-md center-block" style="width: 100px; height: 50px;">Free</button>
+			         <button ng-click="vm.deleteRow()" class="btn btn-danger btn-md center-block" style="width: 100px; height: 50px;">Void</button>
+               <button class="btn btn-success btn-md center-block" style="width: 100px; height:50px;">Pay</button>
 			     </div>
-			</div> -->
+			</div>
       </div>
   </div>
 </div>

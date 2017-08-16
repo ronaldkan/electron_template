@@ -26,7 +26,8 @@
 	height: calc(100vh - 145px);
 	overflow: auto;
 	margin-right: 10px;
-	/*box-shadow: 0 4px 2px -2px #D2D2D2;*/
+	background-color: #FFFFFF;
+	box-shadow: 0 3px 2px -2px #D2D2D2;
 }
 
 .categoryPanel {
@@ -40,7 +41,7 @@
 }
 
 .itemPanel {
-	height: 70px;
+	height: 93px;
 }
 
 .itemPanel:hover {
