@@ -3,6 +3,7 @@
 
 	app.controller('floorController', ['$scope', '$http', '$state', 'statusModel', function($scope, $http, $state, statusModel) {
 		var controller = this;
+
 		$scope.checkTableStatus = function(tableId) {
 			if (_.isEmpty(statusModel.table[tableId]) === true)
 				return 'floor-button';

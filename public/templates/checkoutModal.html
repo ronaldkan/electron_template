@@ -8,7 +8,16 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-md-12">
-                <h3>Changes</h3>
+                <div ng-repeat="info in test">
+                    <div ng-if="vm.gotMessage(info)">
+                        <h1>{{info.message}}</h1>
+                    </div>
+                    <div ng-if="!vm.gotMessage(info)">
+                        <div ng-repeat="order in info">
+                            <h1>{{order.name}}</h1>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

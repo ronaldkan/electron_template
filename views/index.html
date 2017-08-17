@@ -2,6 +2,7 @@
 <html>
 <head>
 	<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+	<link rel="icon" type="image/x-icon" href="/images/logo2.ico" />
 	<link rel='stylesheet' href='/stylesheets/bootstrap.css' />
 	<link rel='stylesheet' href='/stylesheets/font-awesome.css' />
 	<link rel='stylesheet' href='/stylesheets/main.css' />
@@ -25,24 +26,21 @@
 	<script type="text/javascript" src="/javascripts/statusModel.js"></script>
 	<script type="text/javascript" src="/javascripts/checkoutModalController.js"></script>
 	<script>if (window.module) module = window.module;</script>
-	<title>Hello</title>
+	<title>Bing Bing Kaching</title>
 </head>
 <body ng-app="mainApp" ng-controller="mainController as ctrl">
 <nav class="navbar navbar-default navbar-fixed-top navbar-custom" role="navigation">
-	<div class="navbar-center navbar-brand" href="#"><a class="navbar-brand">Brand</a></div>
+	<div class="navbar-center navbar-brand"><a class="navbar-brand" ui-sref="floor"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a></div>
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse" id="navbar-collapse-1" style="padding-right: 15px;">
 		<ul class="nav navbar-nav navbar-right">
-			<li><a ui-sref="admin">Home</a></li>
-			<li><a ui-sref="floor">Floor</a></li>
+			<!-- <li><a ui-sref="admin">Home</a></li> -->
+			<!-- <li><a ui-sref="floor">Floor</a></li> -->
 			<li class="dropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+				<a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-gear" aria-hidden="true"></i><!-- <b class="caret"></b> --></a>
 				<ul class="dropdown-menu">
-					<li><a href="#">Action</a></li>
-					<li><a href="#">Another action</a></li>
-					<li><a href="#">Something else here</a></li>
-					<li class="divider"></li>
-					<li><a href="#">Separated link</a></li>
+					<li><a href="#">Admin Action</a></li>
+					<li><a href="#">Logout</a></li>
 				</ul>
 			</li>
 		</ul>

@@ -22,7 +22,7 @@
 			var itemName = $event.currentTarget.id;
 			var item = $scope.currentItems[itemName];
 			if (_.has($scope.currentOrders, itemName) === false) {
-				$scope.currentOrders[itemName] = {'name': itemName, 'price': item.price, 'quantity': 1};
+				$scope.currentOrders[itemName] = {'name': itemName, 'price': item.price, 'quantity': 1, 'secondary': item.secondary};
 			} else {
 				$scope.currentOrders[itemName].quantity += 1;
 				$scope.currentOrders[itemName].price += item.price;
@@ -88,6 +88,13 @@
 
 		controller.sendClicked = function() {
 			statusModel.table[$scope.table] = $scope.currentOrders;
+			$http.post('/kitchen', _.merge($scope.currentOrders, {'tableId': $scope.table}))
+			.then(function successCallback(response) {
+				console.log(response);
+			}, function errorCallback(response) {
+				console.log("error: " + response);
+			});
+			$scope.currentOrders = _.omit($scope.currentOrders, ['tableId']);
 		};
 
 		controller.checkoutClicked = function() {

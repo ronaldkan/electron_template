@@ -3,8 +3,14 @@ html, body {
 }
 
 .navbar-brand {
-  float: none;
-  }
+    padding: 8px 15px;
+    float: none;
+}
+
+.navbar-brand:hover {
+    opacity: 0.8;
+    color: #FFFFFF;
+}
 
 .navbar-center
 {
