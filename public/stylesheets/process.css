@@ -1,7 +1,15 @@
 .floor-button {
-	height: 50px;
-	width: 50px;
+	height: 100px;
+	width: 100px;
+	background: green;
 }
+
+.floor-button-occupied {
+	height: 100px;
+	width: 100px;
+	background: red;
+}
+
 
 .table > tbody > tr:first-child > td {
     border: none;
@@ -36,7 +44,7 @@
 }
 
 .categoryPanel:hover {
-	opacity: 0.6;
+	opacity: 0.8;
 	cursor: pointer;
 }
 
@@ -45,7 +53,7 @@
 }
 
 .itemPanel:hover {
-	opacity: 0.6;
+	opacity: 0.8;
 	cursor: pointer;
 }
 
@@ -57,4 +65,14 @@
     display: inline-block;
     vertical-align: top;
     border-radius: 0;
+}
+
+#checkoutPanel {
+	background: #990000;
+	color: #FFFFFF;
+}
+
+#checkoutPanel:hover {
+	opacity: 0.8;
+	cursor: pointer;
 }

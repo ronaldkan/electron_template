@@ -9,7 +9,7 @@
               </div>
               <div id="orderList" class="panel panel-default">
                   <div class="panel-body">
-                    <table class="table table-hover">
+                    <table class="table table-condensed">
                       <tbody>
                         <tr class="orderRow" ng-repeat="(id, order) in currentOrders" ng-click="vm.orderClicked($event)">
                           <td width="60%" id="{{order.name}}">{{order.name}}</td>
@@ -20,9 +20,11 @@
                     </table>
                   </div>
               </div>
-              <div class="panel panel-default">
+              <div id="checkoutPanel" ng-click="vm.checkoutClicked()" class="panel panel-default">
                   <div class="panel-body">
-                    Total: ${{totalAmount | priceDisplay}}
+                    <div class="pull-right">
+                      Total: ${{totalAmount | priceDisplay}}
+                    </div>
                   </div>
               </div>
           </div>
@@ -55,13 +57,14 @@
             	</div>
             </div>
             <div class="row" style="margin-top: 5px;">
-			    <div class="col-sm-12 text-center">
-            <button ng-click="vm.selectAllRow()" class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Select All</button>
-			        <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Quantity</button>
-			         <button ng-click="vm.deleteRow()" class="btn btn-danger btn-md center-block" style="width: 100px; height: 50px;">Void</button>
-               <button class="btn btn-success btn-md center-block" style="width: 100px; height:50px;">Pay</button>
-			     </div>
-			</div>
+    			    <div class="col-sm-12 text-center">
+    		        <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Quantity</button>
+                <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Transfer</button>
+                <button ng-click="vm.selectAllRow()" class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Select All</button>
+    		         <button ng-click="vm.deleteRow()" class="btn btn-danger btn-md center-block" style="width: 100px; height: 50px;">Void</button>
+                 <button  class="btn btn-success btn-md center-block" style="width: 100px; height:50px;">Send</button>
+    		      </div>
+      			</div>
       </div>
   </div>
 </div>

@@ -7,14 +7,14 @@
         };
     });
 
-	app.controller('orderController', ['$scope', '$http', '$state', '$stateParams', 'menuModel', function($scope, $http, $state, $stateParams, menuModel) {
+	app.controller('orderController', ['$scope', '$http', '$state', '$stateParams', 'menuModel', '$uibModal', 'statusModel', function($scope, $http, $state, $stateParams, menuModel, $uibModal, statusModel) {
 		var controller = this;
-		var tableId = $stateParams.tableId;
+		var tableId = $stateParams.tableId.toUpperCase();
 		$scope.selectedAll = false;
 		$scope.categories = menuModel.categories;
 		$scope.platter = menuModel.platter;
 		$scope.currentItems = $scope.platter;
-		$scope.currentOrders = {};
+		$scope.currentOrders = statusModel.table[tableId];
 		$scope.table = tableId;
 		$scope.totalAmount = 0;
 		
@@ -23,13 +23,12 @@
 			var item = $scope.currentItems[itemName];
 			if (_.has($scope.currentOrders, itemName) === false) {
 				$scope.currentOrders[itemName] = {'name': itemName, 'price': item.price, 'quantity': 1};
-				$scope.totalAmount += item.price;
-				$scope.totalAmount = _.round($scope.totalAmount, 2);
 			} else {
-				$scope.currentOrders[itemName]['quantity'] += 1;
-				$scope.totalAmount += $scope.currentOrders[itemName]['price'];
-				$scope.totalAmount = _.round($scope.totalAmount, 2);
+				$scope.currentOrders[itemName].quantity += 1;
+				$scope.currentOrders[itemName].price += item.price;
 			}
+			$scope.totalAmount += item.price;
+			$scope.totalAmount = _.round($scope.totalAmount, 2);
 		};
 
 		controller.checkItemLoop = function(index) {
@@ -42,6 +41,12 @@
 			var category = $event.currentTarget.id;
 			if (category === 'Meat Delight')
 				$scope.currentItems = menuModel.meat;
+			else if (category === 'Seafood')
+				$scope.currentItems = menuModel.seafood;
+			else if (category === 'Vegetable')
+				$scope.currentItems = menuModel.vegetable;
+			else if (category === 'Sides')
+				$scope.currentItems = menuModel.side;
 			else
 				$scope.currentItems = menuModel.platter;
 		};
@@ -74,13 +79,29 @@
 			$('.orderRow.active').each(function() {
 				var itemName = $(this)[0].children[0].id;
 				var itemDetails = $scope.currentOrders[itemName];
-				var price = itemDetails['price'];
-				var quantity = itemDetails['quantity'];
 				$scope.currentOrders = _.omit($scope.currentOrders, [itemName]);
-				$scope.totalAmount -= quantity * price;
+				$scope.totalAmount -= itemDetails.price;
 				$scope.totalAmount = _.round($scope.totalAmount, 2);
 				$(this)[0].remove();
 			});
+		};
+
+		controller.sendClicked = function() {
+			statusModel.table[$scope.table] = $scope.currentOrders;
+		};
+
+		controller.checkoutClicked = function() {
+			var modalInstance = $uibModal.open({
+                templateUrl: 'templates/checkoutModal.html',
+                controller: 'checkoutModalController',
+                controllerAs: 'vm',
+                // resolve: {
+                //     diffView: function() {
+                //         return angular.element('#' + logId + '_diffView').val();
+                //     }
+                // },
+                size: 'md'
+            });
 		};
 	}]);
 })();
