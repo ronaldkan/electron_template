@@ -4,11 +4,19 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var Sequelize = require('sequelize');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+var sequelize = require('sequelize');
+var Order = require('./models/order');
+
+Order().sync().then(() => {
+  // Table created
+  console.log("Order db is created");
+});
 app.listen(3000, "127.0.0.1");
 
 // view engine setup
