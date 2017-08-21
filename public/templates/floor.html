@@ -1,26 +1,5 @@
 <div style="background-image: url('/images/floor2.jpg'); position:absolute; height: 100%; width: 100%;">
-<button id="S1" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('S1')" style="position: fixed; top: 75px; left: 20px; box-shadow: 0 0 10px #FFFFFF;">S1</button>
-<button id="S2" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('S2')" style="position: fixed; top: 75px; left: 110px; box-shadow: 0 0 10px #FFFFFF;">S2</button>
-<button id="S3" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('S3')" style="position: fixed; top: 75px; left: 200px; box-shadow: 0 0 10px #FFFFFF;">S3</button>
-<button id="S4" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('S4')" style="position: fixed; top: 75px; left: 290px; box-shadow: 0 0 10px #FFFFFF;">S4</button>
-
-<button id="S5" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('S5')" style="position: fixed; top: 175px; left: 60px;">S5</button>
-<button id="S6" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('S6')" style="position: fixed; top: 175px; left: 150px;">S6</button>
-<button id="S7" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('S7')" style="position: fixed; top: 175px; left: 240px;">S7</button>
-
-<button id="F1" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('F1')" style="position: fixed; top: 75px; left: 400px;">F1</button>
-<button id="F2" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('F2')" style="position: fixed; top: 75px; left: 490px;">F2</button>
-<button id="F3" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('F3')" style="position: fixed; top: 75px; left: 580px;">F3</button>
-
-<button id="N1" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('N1')" style="position: fixed; top: 175px; left: 400px;">N1</button>
-<button id="N2" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('N2')" style="position: fixed; top: 175px; left: 490px;">N2</button>
-<button id="N3" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('N3')" style="position: fixed; top: 175px; left: 580px;">N3</button>
-
-<button id="F4" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('F4')" style="position: fixed; top: 75px; left: 690px;">F4</button>
-<button id="F5" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('F5')" style="position: fixed; top: 75px; left: 780px;">F5</button>
-<button id="F6" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('F6')" style="position: fixed; top: 75px; left: 870px;">F6</button>
-
-<button id="N4" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('N4')" style="position: fixed; top: 175px; left: 690px;">N4</button>
-<button id="N5" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('N5')" style="position: fixed; top: 175px; left: 780px;">N5</button>
-<button id="N6" ng-click="vm.selectTable($event)" class="btn" ng-class="checkTableStatus('N6')" style="position: fixed; top: 175px; left: 870px;">N6</button>
+	<div ng-repeat="(id, table) in tables">
+		<button id="{{id}}" ng-click="vm.selectTable($event)" class="btn floorTables" ng-class="checkTableStatus(id)" ng-style="vm.setTableLocation({{table}})">{{id}}</button>
+	</div>
 </div>

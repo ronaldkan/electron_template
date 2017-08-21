@@ -3,6 +3,7 @@
 	width: 70px;
 	background: #00cc00;
 	color: #FFFFFF;
+	font-size: 20px;
 }
 
 .floor-button-occupied {
@@ -10,6 +11,7 @@
 	width: 70px;
 	background: #ff1a1a;
 	color: #FFFFFF;
+	font-size: 20px;
 }
 
 
@@ -35,7 +37,6 @@
 	height: -moz-calc(100vh - 145px);
 	height: calc(100vh - 145px);
 	overflow: auto;
-/*	margin-right: 10px;*/
 	background-color: #FFFFFF;
 	box-shadow: 0 3px 2px -2px #D2D2D2;
 }
@@ -128,4 +129,9 @@
 
 .modal-body {
 	padding-bottom: 0px;
+}
+
+.floorTables {
+	position: fixed; 
+	box-shadow: 0 0 10px #FFFFFF;
 }

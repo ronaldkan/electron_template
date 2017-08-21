@@ -39,9 +39,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
 	$urlRouterProvider.otherwise('/floor');
 });
 
-app.controller('mainController', ['$scope', '$http', '$state', function($scope, $http, $state) {
+app.controller('mainController', ['$scope', '$http', '$state', 'statusModel', function($scope, $http, $state, statusModel) {
     var controller = this;
-
+    statusModel.initializeTables();
     controller.barTouch = function() {
         $state.go('floor');
     };

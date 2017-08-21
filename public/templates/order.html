@@ -52,7 +52,7 @@
                             <td ng-if="vm.checkIfMessage(id)" width="50%" id="{{rowIndex}}">{{order.name}}</td>
                             <td ng-if="vm.checkIfMessage(id)" width="20%">{{order.quantity}}</td>
                             <td ng-if="vm.checkIfMessage(id)" width="30%" class="text-right">${{order.price | priceDisplay}}</td>
-                            <td ng-if="!vm.checkIfMessage(id)" width="100%" style="color: red">{{order}}</td>
+                            <td id="message" ng-if="!vm.checkIfMessage(id)" width="100%" style="color: red">{{order}}</td>
                           </tr>
                       </tbody>
                       <tbody>
