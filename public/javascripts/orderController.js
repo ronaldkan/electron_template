@@ -9,14 +9,16 @@
 
 	app.controller('orderController', ['$scope', '$http', '$state', '$stateParams', 'menuModel', '$uibModal', 'statusModel', function($scope, $http, $state, $stateParams, menuModel, $uibModal, statusModel) {
 		var controller = this;
-		var tableId = $stateParams.tableId.toUpperCase();
+		var tableId = $stateParams.tableId;
+		controller.statusModel = statusModel;
+		$scope.orderDisplay = controller.statusModel.table[tableId].display;
 		$scope.selectedAll = false;
 		$scope.categories = menuModel.categories;
 		$scope.platter = menuModel.platter;
 		$scope.currentItems = $scope.platter;
-		$scope.currentOrders = statusModel.table[tableId];
+		$scope.currentOrders = {};
 		$scope.table = tableId;
-		$scope.totalAmount = 0;
+		$scope.totalAmount = controller.statusModel.table[tableId].totalAmount;
 		
 		controller.itemClicked = function($event) {
 			var itemName = $event.currentTarget.id;
@@ -27,8 +29,17 @@
 				$scope.currentOrders[itemName].quantity += 1;
 				$scope.currentOrders[itemName].price += item.price;
 			}
+
+			if (_.has(controller.statusModel .table[$scope.table].order, itemName) === false) {
+				controller.statusModel.table[$scope.table].order[itemName] = {'name': itemName, 'price': item.price, 'quantity': 1, 'secondary': item.secondary};
+			} else {
+				controller.statusModel.table[$scope.table].order[itemName].quantity += 1;
+				controller.statusModel.table[$scope.table].order[itemName].price += item.price;
+			}
+
 			$scope.totalAmount += item.price;
 			$scope.totalAmount = _.round($scope.totalAmount, 2);
+			controller.statusModel.table[tableId].totalAmount = $scope.totalAmount;
 		};
 
 		controller.checkItemLoop = function(index) {
@@ -51,9 +62,16 @@
 				$scope.currentItems = menuModel.platter;
 		};
 
+		controller.sentClicked = function($event) {
+			var target = $event.currentTarget;
+			$('.sentRow').each(function() {
+				$(this).removeClass('active');
+			});
+			target.classList.add('active');
+		};
+
 		controller.orderClicked = function($event) {
 			var target = $event.currentTarget;
-			itemName = target.children[0].id;
 			$('.orderRow').each(function() {
 				$(this).removeClass('active');
 			});
@@ -82,19 +100,52 @@
 				$scope.currentOrders = _.omit($scope.currentOrders, [itemName]);
 				$scope.totalAmount -= itemDetails.price;
 				$scope.totalAmount = _.round($scope.totalAmount, 2);
+
+				if(controller.statusModel.table[$scope.table].order[itemName].quantity === itemDetails.quantity)
+					controller.statusModel.table[$scope.table].order = _.omit(controller.statusModel.table[$scope.table].order, [itemName]);
+				else {
+					controller.statusModel.table[$scope.table].order[itemName].quantity -= itemDetails.quantity;
+					controller.statusModel.table[$scope.table].order[itemName].price -= itemDetails.price;
+				}
+
 				$(this)[0].remove();
 			});
+			
+			var sentEntry = $('.sentRow.active');
+			if (_.isEmpty(sentEntry) === false) {
+				var name = sentEntry[0].children[0].textContent;
+				var index = sentEntry[0].children[0].id;
+				var price = controller.statusModel.table[$scope.table].display[index][name].price;
+				var quantity = controller.statusModel.table[$scope.table].display[index][name].quantity;
+				controller.statusModel.table[$scope.table].display[index] = _.omit(controller.statusModel.table[$scope.table].display[index], [name]);
+
+				if(controller.statusModel.table[$scope.table].order[name].quantity === quantity)
+					controller.statusModel.table[$scope.table].order = _.omit(controller.statusModel.table[$scope.table].order, [name]);
+				else {
+					controller.statusModel.table[$scope.table].order[name].quantity -= quantity;
+					controller.statusModel.table[$scope.table].order[name].price -= price;
+				}
+				$scope.totalAmount -= price;
+				$scope.totalAmount = _.round($scope.totalAmount, 2);
+				sentEntry[0].remove();
+			};
+			controller.statusModel.table[tableId].totalAmount = $scope.totalAmount;
 		};
 
 		controller.sendClicked = function() {
-			statusModel.table[$scope.table] = $scope.currentOrders;
+			var displayMessage = {'message': 'Sent on ' + moment().format('HH:mm:ss')};
+			controller.statusModel.table[$scope.table].display.push(_.clone($scope.currentOrders));
+			controller.statusModel.table[$scope.table].display.push(displayMessage);
 			$http.post('/kitchen', _.merge($scope.currentOrders, {'tableId': $scope.table}))
 			.then(function successCallback(response) {
-				console.log(response);
+				$scope.currentOrders = {};
 			}, function errorCallback(response) {
 				console.log("error: " + response);
 			});
-			$scope.currentOrders = _.omit($scope.currentOrders, ['tableId']);
+		};
+
+		controller.checkIfMessage = function(rowId) {
+			return (rowId !== 'message');
 		};
 
 		controller.checkoutClicked = function() {
@@ -102,11 +153,14 @@
                 templateUrl: 'templates/checkoutModal.html',
                 controller: 'checkoutModalController',
                 controllerAs: 'vm',
-                // resolve: {
-                //     diffView: function() {
-                //         return angular.element('#' + logId + '_diffView').val();
-                //     }
-                // },
+                resolve: {
+                    tableId: function() {
+                        return $scope.table;
+                    },
+                    totalAmount: function() {
+                    	return $scope.totalAmount;
+                    }
+                },
                 size: 'md'
             });
 		};

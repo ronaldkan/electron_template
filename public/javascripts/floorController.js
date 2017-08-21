@@ -5,7 +5,7 @@
 		var controller = this;
 
 		$scope.checkTableStatus = function(tableId) {
-			if (_.isEmpty(statusModel.table[tableId]) === true)
+			if (_.isEmpty(statusModel.table[tableId].display) === true)
 				return 'floor-button';
 			else
 				return 'floor-button-occupied';

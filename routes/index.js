@@ -1,53 +1,125 @@
 var express = require('express');
 var router = express.Router();
-var printer = require("node-thermal-printer");
 var _ = require('lodash');
 var moment = require('moment');
 var Order = require('../models/order');
+var escpos = require('escpos');
 
-// var iconv = require('iconv-lite');
-// var legacy = require('legacy-encoding');
-// var cptable = require('codepage');
-
-printer.init({
-    type: 'epson',
-    interface: '/dev/usb/lp0',
-    ip: "192.168.1.148",
-    port: '9100'
-});
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	res.render('index', { title: 'Express' });
+	
 	// Order().create({
 	//     item: {'item3': 'aaa'},
 	//     invoiceId: '421081860'
 	//   });
 });
 
-router.post('/kitchen', function(req, res,next) {
+router.post('/checkout', function(req, res, next) {
+	var device  = new escpos.Network('192.168.1.148', 9100); 
+	var printer1 = new escpos.Printer(device);
+	console.log(req.body);
+});
+
+router.post('/preprint', function(req, res, next) {
+	var device  = new escpos.Network('192.168.1.148', 9100); 
+	var printer1 = new escpos.Printer(device);
+	console.log(req.body);
+	var order = req.body.order;
 	var tableId = req.body.tableId;
-	// printer.setTextDoubleHeight();
-	// printer.bold(true); 
-	// printer.alignCenter();
-	// printer.println("Table Number: " + tableId);
-	// printer.println("------------------------------------------");
-	// _.forOwn(_.omit(req.body, ['tableId']), function(value, key) {
-	// 	printer.alignLeft();
-	// 	printer.println("  " + value.quantity + "         " + value.name);
+	var totalAmount = parseFloat(req.body.totalAmount).toFixed(2).toString();
+	device.open(function(){
+		printer1
+		.font('a')
+		.align('ct')
+		.size(1, 1)
+		.text("Bangkok Street Mookata")
+		.text("421 Ang Mo Kio Avenue 10 #01-1149")
+		.text("Singapore 560421")
+		.text("------------------------------------------")
+		.align("lt")
+		.text("Table: " + tableId)
+		.text("Receipt: 123142")
+		.text("Open at:")
+		.text("------------------------------------------");
+		_.forOwn(order, function(value, key) {
+			printer1
+			.align('lt')
+			.print("  " + value.quantity + "      " + value.name)
+			.align('rt')
+			.print(value.price)
+			.flush();
+		});
+		printer1
+		.align('rt')
+		.text("------------------------------------------")
+		.text("subtotal: $" + totalAmount)
+		.text("total: $" + totalAmount)
+		.text("------------------------------------------")
+		.align('ct')
+		.text("Printed at: " + moment().format('MMMM Do YYYY, HH:mm'))
+		.text("Thank you!")
+		.flush()
+		.cut('', 5)
+		.close();
+	});
+});
+
+router.post('/kitchen', function(req, res,next) {
+	var device  = new escpos.Network('192.168.1.148', 9100); 
+	var printer1 = new escpos.Printer(device);
+	var tableId = req.body.tableId;
+	var items = _.omit(req.body, ['tableId']);
+	// device.open(function(){
+	// 	printer1
+	// 	.font('a')
+	// 	.align('ct')
+	// 	.size(1, 2)
+	// 	.text("Table Number: " + tableId)
+	// 	.text("------------------------------------------");
+	// 	_.forOwn(_.omit(req.body, ['tableId']), function(value, key) {
+	// 		printer1
+	// 		.align('lt')
+	// 		.text("  " + value.quantity + "         " + value.name + " " + value.secondary);
+	// 	});
+	// 	printer1
+	// 	.align('ct')
+	// 	.size(1,1)
+	// 	.text("------------------------------------------")
+	// 	.text("Order Time: " + moment().format('MMMM Do YYYY, HH:mm'))
+	// 	.flush()
+	// 	.cut('', 5)
+	// 	.close();
 	// });
-	// printer.println("------------------------------------------");
-	// printer.setTextNormal(); 
-	// printer.alignCenter();
-	// printer.println("Order Time: " + moment().format('MMMM Do YYYY, HH:mm'));
-	// printer.cut();
-	// printer.execute(function(err) {
-	// 	if (err) {
-	// 		console.log("faillll " + err);
+
+	// Order().findAll({
+	//   where: {
+	//     tableId: tableId,
+	//     isCheckedOut: false
+	//   }
+	// })
+	// .then(function(data) {
+	// 	if (_.isEmpty(data) == true) {
+	// 		Order().create({
+	// 	    	item: items,
+	// 	    	invoiceId: '421081860',
+	// 	    	isCheckedOut: false,
+	// 	    	tableId: tableId
+	// 	  	});
 	// 	} else {
-	// 		console.log("print done");
-	// 	}	
+	// 		var currentItem = data.item;
+	// 		var newItem = _.merge(data.item, items);
+	// 		Order().update({
+	// 			item: newItem
+	// 		}, {
+	// 			where: {
+	// 				tableId: tableId,
+	// 				isCheckedOut: false
+	// 			}
+	// 		});
+
+	// 	}
 	// });
-	// printer.clear(); 
 	return res.json({'success': 'true'});
 });
 

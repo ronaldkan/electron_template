@@ -5,7 +5,7 @@
         var model = {};
         model.table = 
         {
-        	'S1': {},
+        	'S1': {'display': [], 'order': {}, 'totalAmount': 0, 'firstOrder': ""},
         	'S2': {},
         	'S3': {},
         	'S4': {},

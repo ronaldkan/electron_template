@@ -1,14 +1,14 @@
 .floor-button {
 	height: 70px;
 	width: 70px;
-	background: green;
+	background: #00cc00;
 	color: #FFFFFF;
 }
 
 .floor-button-occupied {
 	height: 70px;
 	width: 70px;
-	background: red;
+	background: #ff1a1a;
 	color: #FFFFFF;
 }
 
@@ -35,7 +35,7 @@
 	height: -moz-calc(100vh - 145px);
 	height: calc(100vh - 145px);
 	overflow: auto;
-	margin-right: 10px;
+/*	margin-right: 10px;*/
 	background-color: #FFFFFF;
 	box-shadow: 0 3px 2px -2px #D2D2D2;
 }
@@ -77,4 +77,55 @@
 #checkoutPanel:hover {
 	opacity: 0.8;
 	cursor: pointer;
+}
+
+.checkoutKeysLeft {
+	background-color: #FFFFFF;
+	vertical-align: middle;
+	line-height: 90px;
+	height: 90px;
+	text-align: center;
+	border-right-color: #E2E2E2;
+	border-top-color: #E2E2E2;
+	border-width: 1px;
+	border-left-width: 0px;
+	border-bottom-width: 0px;
+	border-style: solid;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.checkoutKeysRight {
+	background-color: #FFFFFF;
+	vertical-align: middle;
+	line-height: 90px;
+	height: 90px;
+	text-align: center;
+	border-top-color: #E2E2E2;
+	border-width: 1px;
+	border-left-width: 0px;
+	border-bottom-width: 0px;
+	border-right-width: 0px;
+	border-style: solid;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.discountKeys {
+	background-color: #F2F2F2;
+	vertical-align: middle;
+	line-height: 60px;
+	height: 60px;
+	text-align: center;
+	border-color: #E2E2E2;
+	border-style: solid;
+	border-width: 0.5px;
+}
+
+.form-group {
+	margin-bottom: 0px;
+}
+
+.modal-body {
+	padding-bottom: 0px;
 }

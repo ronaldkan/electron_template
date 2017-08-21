@@ -36,9 +36,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
 	$stateProvider.state(floorState);
 	$stateProvider.state(checkoutState);
 	$stateProvider.state(orderState);
-	$urlRouterProvider.otherwise('/');
+	$urlRouterProvider.otherwise('/floor');
 });
 
-app.controller('mainController', ['$scope', '$http', function($scope, $http) {
+app.controller('mainController', ['$scope', '$http', '$state', function($scope, $http, $state) {
+    var controller = this;
 
+    controller.barTouch = function() {
+        $state.go('floor');
+    };
 }]);

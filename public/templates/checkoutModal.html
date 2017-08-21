@@ -1,22 +1,108 @@
-<div class="modal-header">
+<div class="modal-header text-center" style="background-color: #990000">
     <button type="button" ng-click="upsActCtrl.onActionCancel()" class="close" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
-    <h1>Change Log</h1>
+    <h4 style="color: #FFFFFF">Checkout for Table: <span style="font-size: 32px;"><u>{{tableId}}</u></span></h4>
 </div>
 <form class="form-group">
     <div class="modal-body">
-        <div class="row">
-            <div class="col-md-12">
-                <div ng-repeat="info in test">
-                    <div ng-if="vm.gotMessage(info)">
-                        <h1>{{info.message}}</h1>
-                    </div>
-                    <div ng-if="!vm.gotMessage(info)">
-                        <div ng-repeat="order in info">
-                            <h1>{{order.name}}</h1>
-                        </div>
-                    </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 ng-show="!isDiscounted">Total Amount: {{amountPrettyPrint}}</h4>
+                    <h4 ng-show="isDiscounted">
+                        Total Amount({{discountPct}}): <strike>{{amountPrettyPrint}}</strike> {{discountedPrettyPrint}} <div style="cursor: pointer" ng-click="vm.removeDiscountClick()" class="label label-danger">remove</div>
+                    </h4>
+                    <input class="form-control" style="width: 100%; background: #F2F2F2; font-size: 25px;" type="text" ng-model="inputAmount" disabled/>
+                    <h4>Change:</h4>
+                </div>
+            </div>
+        </div>
+        <div ng-show="isKeyPad" style="margin: 0 auto; width: 100%; margin-top: 15px; cursor: pointer;">
+            <div class="row">
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                7
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                8
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                9
+                </div>
+                <div ng-click="vm.onClearClick()" class="col-md-3 checkoutKeysRight">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="row">
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                4
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                5
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                6
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysRight">
+                NETS
+                </div>
+            </div>
+            <div class="row">
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                1
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                2
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                3
+                </div>
+                <div ng-click="vm.preprintClick()" class="col-md-3 checkoutKeysRight">
+                    <i class="fa fa-print" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="row">
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                .
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                0
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                Enter
+                </div>
+                <div ng-click="vm.changeKeyPad()" class="col-md-3 checkoutKeysRight">
+                <i class="fa fa-usd" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        <div ng-show="!isKeyPad" style="margin: 0 auto; width: 100%; margin-top: 15px; cursor: pointer;">
+            <div class="row">
+                <div ng-click="vm.onDiscountClick($event)" class="col-md-3 checkoutKeysLeft">
+                5%
+                </div>
+                <div ng-click="vm.onDiscountClick($event)" class="col-md-3 checkoutKeysLeft">
+                10%
+                </div>
+                <div ng-click="vm.onDiscountClick($event)" class="col-md-3 checkoutKeysLeft">
+                20%
+                </div>
+                <div ng-click="vm.changeKeyPad()" class="col-md-3 checkoutKeysRight">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="row">
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                $20
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                $50
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysLeft">
+                $100
+                </div>
+                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeysRight">
+                $200
                 </div>
             </div>
         </div>

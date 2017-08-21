@@ -19,6 +19,8 @@
 	</script>
 	<script type="text/javascript" src="/javascripts/lib/lodash.js">
 	</script>
+	<script type="text/javascript" src="/javascripts/lib/moment.js">
+	</script>
 	<script type="text/javascript" src="/javascripts/mainApp.js"></script>
 	<script type="text/javascript" src="/javascripts/floorController.js"></script>
 	<script type="text/javascript" src="/javascripts/orderController.js"></script>
@@ -29,13 +31,14 @@
 	<title>Bing Bing Kaching</title>
 </head>
 <body ng-app="mainApp" ng-controller="mainController as ctrl">
-<nav class="navbar navbar-default navbar-fixed-top navbar-custom" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top navbar-custom" role="navigation" ng-click="ctrl.barTouch()">
 	<div class="navbar-center navbar-brand"><a class="navbar-brand" ui-sref="floor"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a></div>
+	<p class="navbar-text"><i class="fa fa-user" aria-hidden="true"></i> Bangkok Street Mookata</p> 
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse" id="navbar-collapse-1" style="padding-right: 15px;">
 		<ul class="nav navbar-nav navbar-right">
 			<!-- <li><a ui-sref="admin">Home</a></li> -->
-			<!-- <li><a ui-sref="floor">Floor</a></li> -->
+			<!-- <li><a ui-sref="floor"><i class="fa fa-history" aria-hidden="true"></i></a></li> -->
 			<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-gear" aria-hidden="true"></i><!-- <b class="caret"></b> --></a>
 				<ul class="dropdown-menu">

@@ -1,7 +1,44 @@
 <div style="padding-top: 60px; background-color: #F2F2F2; height: 100%;">
   <div class="container-fluid">
       <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-8">
+            <div class="row no-gutter">
+              <div class="col-md-2">
+                <div ng-repeat="category in categories">
+                  <div id="{{category}}" ng-click="vm.categoryClicked($event)" class="panel panel-default" style="margin-bottom: 0px;">
+                      <div class="panel-body categoryPanel">
+                        {{category}}
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-10">
+                <div id="itemList" class="container-fluid">
+                  <div class="row">
+                    <div ng-repeat="(id, item) in currentItems" class="no-gutter">
+                      <div class="col-md-4">
+                        <div ng-if="vm.checkItemLoop($index)" class="clearfix"></div>
+                        <div id="{{item.name}}" ng-click="vm.itemClicked($event)" class="panel panel-default itemPanel" style="margin-bottom: 0px;">
+                            <div class="panel-body">
+                                {{item.name}}<br>{{item.secondary}}<br>${{item.price | priceDisplay}}
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top: 7px">
+                  <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Deposit</button>
+                  <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Stash</button>
+                  <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Transfer</button>
+                  <button ng-click="vm.sendClicked()" class="btn btn-success btn-md center-block" style="width: 100px; height:50px;">Send</button>
+                  <button ng-click="vm.selectAllRow()" class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Select All</button>
+                  <button ng-click="vm.deleteRow()" class="btn btn-danger btn-md center-block" style="width: 100px; height: 50px;">Void</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4" style="padding-right: 0px; padding-left: 10px;">
               <div class="panel panel-default" style="margin-bottom: 5px;">
                   <div class="panel-body">
                     Table: {{table}}
@@ -10,11 +47,19 @@
               <div id="orderList" class="panel panel-default">
                   <div class="panel-body">
                     <table class="table table-condensed">
+                      <tbody ng-repeat="display in orderDisplay" ng-init="rowIndex = $index">
+                          <tr class="sentRow" ng-click="vm.sentClicked($event)" ng-repeat="(id, order) in display">
+                            <td ng-if="vm.checkIfMessage(id)" width="50%" id="{{rowIndex}}">{{order.name}}</td>
+                            <td ng-if="vm.checkIfMessage(id)" width="20%">{{order.quantity}}</td>
+                            <td ng-if="vm.checkIfMessage(id)" width="30%" class="text-right">${{order.price | priceDisplay}}</td>
+                            <td ng-if="!vm.checkIfMessage(id)" width="100%" style="color: red">{{order}}</td>
+                          </tr>
+                      </tbody>
                       <tbody>
                         <tr class="orderRow" ng-repeat="(id, order) in currentOrders" ng-click="vm.orderClicked($event)">
-                          <td width="60%" id="{{order.name}}">{{order.name}}</td>
+                          <td width="50%" id="{{order.name}}">{{order.name}}</td>
                           <td width="20%">{{order.quantity}}</td>
-                          <td width="20%" class="text-right">${{order.price | priceDisplay}}</td>
+                          <td width="30%" class="text-right">${{order.price | priceDisplay}}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -22,49 +67,15 @@
               </div>
               <div id="checkoutPanel" ng-click="vm.checkoutClicked()" class="panel panel-default">
                   <div class="panel-body">
+                    <div class="pull-left">
+                      CHECKOUT
+                    </div>
                     <div class="pull-right">
                       Total: ${{totalAmount | priceDisplay}}
                     </div>
                   </div>
               </div>
           </div>
-          <div class="col-md-8">
-            <div class="row no-gutter">
-            	<div class="col-md-2">
-                <div ng-repeat="category in categories">
-            		  <div id="{{category}}" ng-click="vm.categoryClicked($event)" class="panel panel-default" style="margin-bottom: 0px;">
-	                  	<div class="panel-body categoryPanel">
-		                    {{category}}
-	                  	</div>
-	              	</div>
-                </div>
-            	</div>
-            	<div class="col-md-10">
-            		<div id="itemList" class="container-fluid">
-            			<div class="row">
-            				<div ng-repeat="(id, item) in currentItems" class="no-gutter">
-	            				<div class="col-md-4">
-                        <div ng-if="vm.checkItemLoop($index)" class="clearfix"></div>
-	            					<div id="{{item.name}}" ng-click="vm.itemClicked($event)" class="panel panel-default itemPanel" style="margin-bottom: 0px;">
-						              	<div class="panel-body">
-						                    {{item.name}}<br>{{item.secondary}}<br>${{item.price | priceDisplay}}
-						              	</div>
-						          	</div>
-	            				</div>
-            				</div>
-            			</div>
-            		</div>
-            	</div>
-            </div>
-            <div class="row" style="margin-top: 5px;">
-    			    <div class="col-sm-12 text-center">
-    		        <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Quantity</button>
-                <button class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Transfer</button>
-                <button ng-click="vm.selectAllRow()" class="btn btn-primary btn-md center-block" style="width: 100px; height:50px;">Select All</button>
-    		         <button ng-click="vm.deleteRow()" class="btn btn-danger btn-md center-block" style="width: 100px; height: 50px;">Void</button>
-                 <button ng-click="vm.sendClicked()" class="btn btn-success btn-md center-block" style="width: 100px; height:50px;">Send</button>
-    		      </div>
-      			</div>
       </div>
   </div>
 </div>

@@ -13,10 +13,15 @@ module.exports = function () {
 	  	type: Sequelize.STRING
 	  },
 	  tableId: {
-	  	type: Sequelize.INTEGER
+	  	type: Sequelize.STRING
 	  },
 	  isCheckedOut: {
-	  	type: Sequelize.BOOLEAN
+	  	type: Sequelize.BOOLEAN,
+	  	defaultValue: false
+	  },
+	  isStashed: {
+	  	type:Sequelize.BOOLEAN,
+	  	defaultValue: false
 	  }
 	});
 

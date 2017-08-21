@@ -12,22 +12,23 @@
     "debug": "~2.6.3",
     "ejs": "^2.5.7",
     "electron": "^1.7.5",
+    "escpos": "^2.4.3",
     "express": "~4.15.2",
     "express-livereload": "0.0.24",
     "iconv-lite": "^0.4.18",
-    "legacy-encoding": "^3.0.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "morgan": "~1.8.1",
-    "node-thermal-printer": "^1.0.5",
     "pg": "^7.1.2",
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.5.0",
+    "serialport": "^5.0.0",
     "serve-favicon": "~2.4.2"
   },
   "main": "main.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {}
 }
