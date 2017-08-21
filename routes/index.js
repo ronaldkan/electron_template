@@ -24,7 +24,6 @@ router.post('/checkout', function(req, res, next) {
 router.post('/preprint', function(req, res, next) {
 	var device  = new escpos.Network('192.168.1.148', 9100); 
 	var printer1 = new escpos.Printer(device);
-	console.log(req.body);
 	var order = req.body.order;
 	var tableId = req.body.tableId;
 	var totalAmount = parseFloat(req.body.totalAmount).toFixed(2).toString();
@@ -43,18 +42,24 @@ router.post('/preprint', function(req, res, next) {
 		.text("Open at:")
 		.text("------------------------------------------");
 		_.forOwn(order, function(value, key) {
+			var name = value.name;
+			if (name.length < 20) {
+				if (value.price < 10)
+					name = _.padEnd(name, 20, " ");
+				else if (value.price < 100)
+					name = _.padEnd(name, 19, " ");
+				else if (value.price < 1000)
+					name = _.padEnd(name, 18, " ");
+			}
 			printer1
 			.align('lt')
-			.print("  " + value.quantity + "      " + value.name)
-			.align('rt')
-			.print(value.price)
-			.flush();
+			.text("  " + value.quantity + "      " + name + "        " + parseFloat(value.price).toFixed(2).toString());
 		});
 		printer1
 		.align('rt')
 		.text("------------------------------------------")
-		.text("subtotal: $" + totalAmount)
-		.text("total: $" + totalAmount)
+		.text("subtotal: " + totalAmount)
+		.text("total: " + totalAmount)
 		.text("------------------------------------------")
 		.align('ct')
 		.text("Printed at: " + moment().format('MMMM Do YYYY, HH:mm'))
@@ -63,6 +68,7 @@ router.post('/preprint', function(req, res, next) {
 		.cut('', 5)
 		.close();
 	});
+	return res.json({'success': 'true'});
 });
 
 router.post('/kitchen', function(req, res,next) {
