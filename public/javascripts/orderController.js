@@ -151,7 +151,7 @@
 			if (_.isEmpty($scope.currentOrders) === true)
 				return;
 			if (controller.statusModel.table[$scope.table].firstOrder === "") {
-				controller.statusModel.table[$scope.table].firstOrder = moment().format('HH:mm:ss')
+				controller.statusModel.table[$scope.table].firstOrder = moment().format('MMMM Do YYYY, HH:mm');
 				controller.statusModel.table[$scope.table].invoiceId = moment().format('YY') + 'AMK' + moment().format('HHDDmmss');
 			}
 			var displayMessage = {'message': 'Sent on ' + moment().format('HH:mm:ss')};

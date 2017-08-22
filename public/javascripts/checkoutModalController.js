@@ -1,7 +1,7 @@
 (function () {
     var app = angular.module('mainApp');
 
-    app.controller('checkoutModalController', ['$scope', '$uibModalInstance', 'tableId', 'totalAmount', '$http', 'statusModel', 'deposit', '$state', function ($scope, $uibModalInstance, tableId, totalAmount, $http, statusModel, deposit, $state) {
+    app.controller('checkoutModalController', ['$scope', '$uibModalInstance', 'tableId', 'totalAmount', '$http', 'statusModel', 'deposit', '$state', '$timeout', function ($scope, $uibModalInstance, tableId, totalAmount, $http, statusModel, deposit, $state, $timeout) {
         
         var controller = this;
         $scope.isKeyPad = true;
@@ -25,6 +25,10 @@
                 $scope.inputAmount = "0.00";
             }
             var tableStatus = statusModel.table[$scope.tableId];
+            if (tableStatus.firstOrder === "")
+                tableStatus.firstOrder = moment().format('MMMM Do YYYY, HH:mm');
+            if (tableStatus.invoiceId === "")
+                tableStatus.invoiceId = moment().format('YY') + 'AMK' + moment().format('HHDDmmss');
             var info = {
                 'order': tableStatus.order,
                 'firstOrder': tableStatus.firstOrder,
@@ -57,7 +61,9 @@
             .then(function successCallback(response) {
                 statusModel.clearTable($scope.tableId);
                 $state.go('floor');
-                $uibModalInstance.dismiss();
+                $timeout(function() {
+                    $uibModalInstance.dismiss();
+                }, 5000);
             }, function errorCallback(response) {
                 console.log("error: " + response);
             });
