@@ -18,13 +18,13 @@
             </div>
             <div class="row">
                 <div class="col-md-2">
-                    <h4 ng-if="deposit !== 0">Deposit:</h4>
+                    <h4 ng-if="deposit !== '0.00'">Deposit:</h4>
                     <h4 ng-if="cash !== 0">Cash:</h4>
                     <h4 ng-if="nets !== 0">Nets:</h4>
                     <h4 ng-if="change !== 0">Change:</h4>
                 </div>
                 <div class="col-md-2 text-right">
-                    <h4 ng-if="deposit !== 0">${{deposit}}</h4>
+                    <h4 ng-if="deposit !== '0.00'">${{deposit}}</h4>
                     <h4 ng-if="cash !== 0">${{cash}}</h4>
                     <h4 ng-if="nets !== 0">${{nets}}</h4>
                     <h4 ng-if="change !== 0">${{change}}</h4>
@@ -56,7 +56,7 @@
                 <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeys">
                 6
                 </div>
-                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeys">
+                <div ng-click="vm.onNetsClick()" class="col-md-3 checkoutKeys">
                 NETS
                 </div>
             </div>

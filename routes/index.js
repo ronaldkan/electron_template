@@ -15,7 +15,8 @@ router.post('/checkout', function(req, res, next) {
 	var printer1 = new escpos.Printer(device);
 	var order = req.body.order;
 	var tableId = req.body.tableId;
-	var totalAmount = parseFloat(req.body.totalAmount).toFixed(2).toString();
+	var totalAmount = parseFloat(req.body.totalAmount).toFixed(2);
+	totalAmount = _.padStart(totalAmount, 7, " ");
 	var invoiceId = req.body.invoiceId;
 	var firstOrder = req.body.firstOrder;
 	device.open(function(){
@@ -46,18 +47,38 @@ router.post('/checkout', function(req, res, next) {
 			.align('lt')
 			.text("  " + value.quantity + "      " + name + "        " + parseFloat(value.price).toFixed(2).toString());
 		});
-		printer1
-		.align('rt')
-		.text("------------------------------------------")
-		.text("Subtotal: " + totalAmount)
-		.text("Total: " + totalAmount);
-		if (_.has(req.body, 'cash') === true) {
+		if (_.has(req.body, 'discountedAmount') === true) {
+			var discountedAmount = req.body.discountedAmount;
+			discountedAmount = _.padStart(discountedAmount, 7, " ");
 			printer1
-			.text("Cash: " + req.body.cash);
+			.align('rt')
+			.text("------------------------------------------")
+			.text("Subtotal: " + totalAmount)
+			.text("Total(" + req.body.discPct +" off): " + discountedAmount);
+		} else {
+			printer1
+			.align('rt')
+			.text("------------------------------------------")
+			.text("Subtotal: " + totalAmount)
+			.text("Total: " + totalAmount);
 		}
-		if (_.has(req.body, 'change') === true) {
+		if (_.has(req.body, 'cash') === true && req.body.cash !== 0) {
+			var cash = req.body.cash.toFixed(2);
+			cash = _.padStart(cash, 7, " ");
 			printer1
-			.text("Change: " + req.body.change);
+			.text("Cash: " + cash);
+		}
+		if (_.has(req.body, 'nets') === true && req.body.nets !== 0) {
+			var nets = req.body.nets.toFixed(2);
+			nets = _.padStart(nets, 7, " ");
+			printer1
+			.text("Nets: " + nets);
+		}
+		if (_.has(req.body, 'change') === true && req.body.change !== 0) {
+			var change = req.body.change.toFixed(2);
+			change = _.padStart(change, 7, " ");
+			printer1
+			.text("Change: " + change);
 		}
 		printer1
 		.text("------------------------------------------")

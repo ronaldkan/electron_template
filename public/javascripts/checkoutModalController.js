@@ -1,7 +1,7 @@
 (function () {
     var app = angular.module('mainApp');
 
-    app.controller('checkoutModalController', ['$scope', '$uibModalInstance', 'tableId', 'totalAmount', '$http', 'statusModel', 'deposit', function ($scope, $uibModalInstance, tableId, totalAmount, $http, statusModel, deposit) {
+    app.controller('checkoutModalController', ['$scope', '$uibModalInstance', 'tableId', 'totalAmount', '$http', 'statusModel', 'deposit', '$state', function ($scope, $uibModalInstance, tableId, totalAmount, $http, statusModel, deposit, $state) {
         
         var controller = this;
         $scope.isKeyPad = true;
@@ -20,6 +20,10 @@
         $scope.change = 0;
 
         controller.onConfirmationClick = function() {
+            if ($scope.inputAmount !== "0.00") {
+                $scope.cash = parseFloat($scope.inputAmount).toFixed(2);
+                $scope.inputAmount = "0.00";
+            }
             var tableStatus = statusModel.table[$scope.tableId];
             var info = {
                 'order': tableStatus.order,
@@ -28,30 +32,41 @@
                 'tableId': $scope.tableId,
                 'totalAmount': tableStatus.totalAmount
             }
+            var currentTotal = parseFloat($scope.deposit) + parseFloat($scope.cash) + parseFloat($scope.nets);
             // discount price
             if($scope.discountedAmount !== 0.00) {
-
+                if (currentTotal >= $scope.discountedAmount) {
+                    $scope.change = parseFloat(currentTotal - $scope.discountedAmount).toFixed(2);
+                    info['discountedAmount'] = parseFloat($scope.discountedAmount).toFixed(2);
+                    info['discPct'] = $scope.discountPct;
+                } else {
+                    return;
+                }
             } else {
-                
-                //deposit scenario
-                if($scope.totalAmount <= $scope.deposit) {
-                    $scope.cash = $scope.deposit;
-                    $scope.change = parseFloat($scope.cash - $scope.totalAmount).toFixed(2);
-                    info['cash'] = $scope.cash;
-                    info['change'] = $scope.change;
-                    
-                } else if ($scope.totalAmount <= $scope.cash) {
-                    $scope.change = parseFloat($scope.cash - $scope.totalAmount).toFixed(2);
-                    info['cash'] = $scope.cash;
-                    info['change'] = $scope.change;
+                // fully paid
+                if (currentTotal >= $scope.totalAmount) {
+                    $scope.change = parseFloat(currentTotal - $scope.totalAmount).toFixed(2);
+                } else {
+                    return;
                 }
             }
+            info['cash'] = parseFloat($scope.deposit) + parseFloat($scope.cash);
+            info['nets'] = parseFloat($scope.nets);
+            info['change'] = parseFloat($scope.change);
             $http.post('/checkout', _.merge($scope.currentOrders, info))
             .then(function successCallback(response) {
-                console.log('huat');
+                statusModel.clearTable($scope.tableId);
+                $state.go('floor');
+                $uibModalInstance.dismiss();
             }, function errorCallback(response) {
                 console.log("error: " + response);
             });
+        };
+
+        controller.onNetsClick = function() {
+            $scope.nets = parseFloat($scope.inputAmount).toFixed(2);
+            $scope.inputAmount = "0.00";
+            controller.onConfirmationClick();
         };
 
         controller.onActionCancel = function () {
@@ -59,7 +74,6 @@
         };
 
         controller.onNumberClick = function($event) {
-            console.log($event.currentTarget);
             if ($scope.inputAmount === "0.00") {
                 $scope.inputAmount = $event.currentTarget.textContent.trim();
             } else {
