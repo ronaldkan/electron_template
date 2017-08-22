@@ -80,33 +80,14 @@
 	cursor: pointer;
 }
 
-.checkoutKeysLeft {
+.checkoutKeys {
 	background-color: #FFFFFF;
 	vertical-align: middle;
 	line-height: 90px;
 	height: 90px;
 	text-align: center;
-	border-right-color: #E2E2E2;
-	border-top-color: #E2E2E2;
-	border-width: 1px;
-	border-left-width: 0px;
-	border-bottom-width: 0px;
-	border-style: solid;
-	font-size: 20px;
-	font-weight: bold;
-}
-
-.checkoutKeysRight {
-	background-color: #FFFFFF;
-	vertical-align: middle;
-	line-height: 90px;
-	height: 90px;
-	text-align: center;
-	border-top-color: #E2E2E2;
-	border-width: 1px;
-	border-left-width: 0px;
-	border-bottom-width: 0px;
-	border-right-width: 0px;
+	border-color: #E2E2E2;
+	border-width: 0.1px;
 	border-style: solid;
 	font-size: 20px;
 	font-weight: bold;
@@ -135,3 +116,31 @@
 	position: fixed; 
 	box-shadow: 0 0 10px #FFFFFF;
 }
+
+.wrap {
+    height:auto;
+    margin: auto;
+    text-align:center;
+    position:relative;
+}
+
+.text_over_image {
+    position: absolute;
+ 	margin: auto;
+ 	top: 17px;
+    left:0;
+    right:0;
+    bottom:0;
+    color:#FFFFFF;
+    font-size: 24px;
+}
+
+.transferConfirmation {
+	height: 50px;
+	width: 150px;
+	border-radius: 0;
+}
+
+
+
+

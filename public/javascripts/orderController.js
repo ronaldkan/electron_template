@@ -19,6 +19,7 @@
 		$scope.currentOrders = controller.statusModel.table[tableId].currentOrders;
 		$scope.table = tableId;
 		$scope.totalAmount = controller.statusModel.table[tableId].totalAmount;
+		$scope.deposit = controller.statusModel.table[tableId].deposit; 
 		
 		controller.itemClicked = function($event) {
 			var itemName = $event.currentTarget.id;
@@ -117,7 +118,7 @@
 			
 			$('.sentRow.active').each(function() {
 				var sentEntry = $(this);
-				var name = sentEntry[0].children[0].textContent;
+				var name = sentEntry[0].children[1].textContent;
 				var index = sentEntry[0].children[0].id;
 				var price = controller.statusModel.table[$scope.table].display[index][name].price;
 				var quantity = controller.statusModel.table[$scope.table].display[index][name].quantity;
@@ -147,8 +148,12 @@
 		};
 
 		controller.sendClicked = function() {
-			if (controller.statusModel.table[$scope.table].firstOrder === "")
+			if (_.isEmpty($scope.currentOrders) === true)
+				return;
+			if (controller.statusModel.table[$scope.table].firstOrder === "") {
 				controller.statusModel.table[$scope.table].firstOrder = moment().format('HH:mm:ss')
+				controller.statusModel.table[$scope.table].invoiceId = moment().format('YY') + 'AMK' + moment().format('HHDDmmss');
+			}
 			var displayMessage = {'message': 'Sent on ' + moment().format('HH:mm:ss')};
 			controller.statusModel.table[$scope.table].display.push(_.clone($scope.currentOrders));
 			controller.statusModel.table[$scope.table].display.push(displayMessage);
@@ -176,9 +181,50 @@
                     },
                     totalAmount: function() {
                     	return $scope.totalAmount;
+                    },
+                    deposit: function() {
+                    	return $scope.deposit;
                     }
                 },
                 size: 'md'
+            });
+		};
+
+		controller.depositClicked = function() {
+			var modalInstance = $uibModal.open({
+                templateUrl: 'templates/depositModal.html',
+                controller: 'depositModalController',
+                controllerAs: 'vm',
+                resolve: {
+                    tableId: function() {
+                        return $scope.table;
+                    },
+                    deposit: function() {
+                    	return parseFloat($scope.deposit).toFixed(2);
+                    }
+                },
+                size: 'md'
+            }).result.then(function(data) {
+            	$scope.deposit = data;
+            	controller.statusModel.table[$scope.table].deposit = data;
+            });
+		};
+
+		controller.transferClicked = function() {
+			var modalInstance = $uibModal.open({
+                templateUrl: 'templates/transferModal.html',
+                controller: 'transferModalController',
+                controllerAs: 'vm',
+                resolve: {
+                    tableId: function() {
+                        return $scope.table;
+                    },
+                },
+                size: 'lg'
+            }).result.then(function(data) {
+            	controller.statusModel.table[data] = controller.statusModel.table[$scope.table];
+            	controller.statusModel.clearTable($scope.table);
+            	$scope.table = data;
             });
 		};
 	}]);

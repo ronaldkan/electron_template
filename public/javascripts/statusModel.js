@@ -32,12 +32,12 @@
         model.table = {};
 
         model.clearTable = function(tableId) {
-            model.table[tableId] = {'display': [], 'order': {}, 'totalAmount': 0, 'firstOrder': "", 'currentOrders': {}};
+            model.table[tableId] = {'display': [], 'order': {}, 'totalAmount': 0, 'firstOrder': "", 'currentOrders': {}, 'deposit': "0.00", 'invoiceId': ""};
         };
 
         model.initializeTables = function() {
             _.forEach(_.keys(model.tableConfig), function(ids) {
-                model.table[ids] = {'display': [], 'order': {}, 'totalAmount': 0, 'firstOrder': "", 'currentOrders': {}};
+                model.table[ids] = {'display': [], 'order': {}, 'totalAmount': 0, 'firstOrder': "", 'currentOrders': {}, 'deposit': "0.00", 'invoiceId': ""};
             });
         };
 

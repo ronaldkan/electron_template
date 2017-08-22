@@ -7,9 +7,9 @@
 
 		$scope.checkTableStatus = function(tableId) {
 			if (_.isEmpty(statusModel.table[tableId].display) === true)
-				return 'floor-button';
+				return '/images/table.png';
 			else
-				return 'floor-button-occupied';
+				return '/images/table-active.png';
 		};
 
 		controller.selectTable = function($event) {

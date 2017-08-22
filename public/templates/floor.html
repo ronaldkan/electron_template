@@ -1,5 +1,10 @@
-<div style="background-image: url('/images/floor2.jpg'); position:absolute; height: 100%; width: 100%;">
+<div style="background-image: url('/images/darkwood.jpg'); position:absolute; height: 100%; width: 100%;">
 	<div ng-repeat="(id, table) in tables">
-		<button id="{{id}}" ng-click="vm.selectTable($event)" class="btn floorTables" ng-class="checkTableStatus(id)" ng-style="vm.setTableLocation({{table}})">{{id}}</button>
+		<div id="{{id}}" ng-click="vm.selectTable($event)" class="wrap" ng-style="vm.setTableLocation({{table}})" style="position: fixed; cursor: pointer;">
+	        <img ng-src="{{checkTableStatus(id)}}" width="70" height="70">
+	        <div class="text_over_image">{{id}}</div>
+		</div>
 	</div>
+	
 </div>
+
