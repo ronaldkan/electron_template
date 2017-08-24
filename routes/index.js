@@ -16,15 +16,84 @@ router.get('/', function(req, res, next) {
 	res.render('index', { title: 'Express' });
 });
 
+router.get('/tables', function(req, res, next) {
+	Order().findAll({
+		where: {
+			isCheckedOut: false
+		}
+	})
+	.then(function(response) {
+		return res.json({'content': response});
+	});
+});
+
 router.get('/log', function(req, res, next) {
 	 var responsePromise = Order().findAll({
 		  where: {
 		    isCheckedOut: true
 		  }
 		}).then(function(response){
-			console.log(response);
 			return res.json({'content': response});
 		});
+});
+
+router.post('/void', function(req, res, next) {
+	var display = req.body.display;
+	var order = req.body.order;
+	var tableId = req.body.tableId;
+	var receiptInfo = req.body.receiptInfo;
+	Order().findAll({
+	  where: {
+	    tableId: tableId,
+	    isCheckedOut: false
+	  }
+	})
+	.then(function(data) {
+		if (_.isEmpty(data) == true) {
+			
+		} else {
+			Order().update({
+				display: display,
+				order: order,
+				receiptInfo: receiptInfo
+			}, {
+				where: {
+					tableId: tableId,
+					isCheckedOut: false
+				}
+			});
+
+		}
+	});
+	return res.json({'content': response});
+
+});
+
+router.post('/transfer', function(req, res, next) {
+	var newTable = req.body.newTable;
+	var oldTable = req.body.oldTable;
+	Order().findAll({
+	  where: {
+	    tableId: oldTable,
+	    isCheckedOut: false
+	  }
+	})
+	.then(function(data) {
+		if (_.isEmpty(data) == true) {
+			
+		} else {
+			Order().update({
+				tableId: newTable
+			}, {
+				where: {
+					tableId: oldTable,
+					isCheckedOut: false
+				}
+			});
+
+		}
+	});
+	return res.json({'content': response});
 });
 
 router.post('/eod', function(req, res, next) {
@@ -236,13 +305,18 @@ router.post('/preprint', function(req, res, next) {
 });
 
 router.post('/kitchen', function(req, res,next) {
+	console.log(req.body);
 	var tableId = req.body.tableId;
-	var items = _.omit(req.body, ['tableId']);
+	var items = req.body.currentOrders;
+	var order = req.body.order;
+	var display = req.body.display;
+	var invoiceId = req.body.invoiceId;
+	var receiptInfo = req.body.receiptInfo;
 	printer.alignCenter();
 	printer.setTextDoubleHeight();
 	printer.println("Table: " + tableId);
 	printer.println("------------------------------------------");
-	_.forOwn(_.omit(req.body, ['tableId']), function(value, key) {
+	_.forOwn(items, function(value, key) {
 		printer.alignLeft();
 		printer.println("  " + value.quantity + "         " + value.name + " " + value.secondary, 'GB18030');
 	});
@@ -268,16 +342,18 @@ router.post('/kitchen', function(req, res,next) {
 	.then(function(data) {
 		if (_.isEmpty(data) == true) {
 			Order().create({
-		    	item: items,
-		    	invoiceId: '421081860',
+		    	item: order,
+		    	invoiceId: invoiceId,
 		    	isCheckedOut: false,
-		    	tableId: tableId
+		    	tableId: tableId,
+		    	display: display,
+		    	receiptInfo: receiptInfo
 		  	});
 		} else {
-			var currentItem = data.item;
-			var newItem = _.merge(data.item, items);
 			Order().update({
-				item: newItem
+				item: order,
+				display: display,
+				receiptInfo: receiptInfo
 			}, {
 				where: {
 					tableId: tableId,

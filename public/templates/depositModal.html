@@ -39,7 +39,7 @@
                 <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeys">
                 6
                 </div>
-                <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeys">
+                <div ng-click="vm.onFixAmount($event)" class="col-md-3 checkoutKeys">
                 $50
                 </div>
             </div>
@@ -53,7 +53,7 @@
                 <div ng-click="vm.onNumberClick($event)" class="col-md-3 checkoutKeys">
                 3
                 </div>
-                <div ng-click="vm.preprintClick()" class="col-md-3 checkoutKeys">
+                <div ng-click="vm.onFixAmount($event)" class="col-md-3 checkoutKeys">
                 $100
                 </div>
             </div>
@@ -67,8 +67,8 @@
                 <div ng-click="vm.onConfirmClick()" class="col-md-3 checkoutKeys">
                 Enter
                 </div>
-                <div ng-click="vm.changeKeyPad()" class="col-md-3 checkoutKeys">
-                $200
+                <div ng-click="vm.onVoidClick()" class="col-md-3 checkoutKeys">
+                <span style="color: red;">Void</span>
                 </div>
             </div>
         </div>

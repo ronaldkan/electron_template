@@ -146,14 +146,29 @@
 	height: -moz-calc(100vh - 80px);
 	height: calc(100vh - 80px);
 	overflow: auto;
+	background-color: #FFFFFF;
+	box-shadow: 2px 3px 2px -2px #D2D2D2;
+	padding-left: 0px;
+	padding-right: 0px;
+	cursor: pointer;
+}
+
+
+.logListActive {
+	background: #ff3333 !important;
 }
 
 .logItemList {
-	height: -webkit-calc(100vh - 203px);
-	height: -moz-calc(100vh - 203px);
-	height: calc(100vh - 203px);
+	height: -webkit-calc(100vh - 265px);
+	height: -moz-calc(100vh - 265px);
+	height: calc(100vh - 265px);
 	overflow: auto;
 }
 
+.historyLogList {
+	background: #990000;
+	color: #FFFFFF;
+	width: 100%;
+}
 
 

@@ -13,20 +13,26 @@
 	        };
 	    });
 
+	    controller.setFirstClass = function(index) {
+	    	if (index === 0)
+	    		return 'logListActive';
+	    };
+
 		controller.getLogs = function() {
-			controller.abc
-			abc = [];
-			$http.get('/log')
-			.then(function (response) {
-				$scope.logs = response.data.content;
-				console.log($scope.logs);
-				$scope.display = response.data.content[5];
-			});
+			// $http.get('/log')
+			// .then(function (response) {
+			// 	$scope.logs = response.data.content;
+			// 	$scope.display = response.data.content[0];
+			// });
 		};
 
 		controller.onLogClick = function($event) {
 			var id = $event.currentTarget.id;
 			$scope.display = $scope.logs[id];
+			$('.historyLogList').each(function() {
+				$(this).removeClass('logListActive');
+			});
+			$event.currentTarget.children[0].classList.add('logListActive');
 		};
 
 		controller.getLogs();	

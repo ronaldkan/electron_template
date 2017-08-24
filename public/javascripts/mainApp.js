@@ -43,9 +43,20 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
 app.controller('mainController', ['$scope', '$http', '$state', 'statusModel', '$uibModal', function($scope, $http, $state, statusModel, $uibModal) {
     var controller = this;
-    statusModel.initializeTables();
+
     controller.barTouch = function() {
         $state.go('floor');
+    };
+
+    controller.appInitialize = function() {
+        modalInstance = $uibModal.open({
+            backdrop: 'static',
+            keyboard: 'false',
+            templateUrl: 'templates/loading.html',
+            controller: 'loadingModalController',
+            controllerAs: 'vm',
+            size: 'sm'
+        });
     };
 
     controller.endOfDay = function() {
@@ -56,6 +67,8 @@ app.controller('mainController', ['$scope', '$http', '$state', 'statusModel', '$
             resolve: {
             },
             size: 'sm'
-            });
+        });
     };
+    statusModel.initializeTables();
+    // controller.appInitialize();
 }]);

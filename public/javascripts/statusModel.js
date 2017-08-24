@@ -3,6 +3,7 @@
 
     app.factory('statusModel', ['$rootScope', function($rootScope) {
         var model = {};
+
         model.tableConfig = {
             'S1': {'top': 75, 'left': 20},
             'S2': {'top': 75, 'left': 110},
@@ -32,12 +33,44 @@
         model.table = {};
 
         model.clearTable = function(tableId) {
-            model.table[tableId] = {'display': [], 'order': {}, 'totalAmount': 0, 'firstOrder': "", 'currentOrders': {}, 'deposit': "0.00", 'invoiceId': ""};
+            model.table[tableId] = {
+                'display': [],
+                'order': {},
+                'currentOrders': {},
+                'invoiceId': "",
+                'receiptInfo': {
+                    'totalAmount': 0.00,
+                    'firstOrder': "",
+                    'discountAmount': 0.00,
+                    'discountPct': "",
+                    'cash': "",
+                    'nets': "",
+                    "change": "",
+                    "checkoutTime": "",
+                    "deposit": "0.00" 
+                }
+            };;
         };
 
         model.initializeTables = function() {
             _.forEach(_.keys(model.tableConfig), function(ids) {
-                model.table[ids] = {'display': [], 'order': {}, 'totalAmount': 0, 'firstOrder': "", 'currentOrders': {}, 'deposit': "0.00", 'invoiceId': ""};
+                model.table[ids] = {
+                'display': [],
+                'order': {},
+                'currentOrders': {},
+                'invoiceId': "",
+                'receiptInfo': {
+                    'totalAmount': 0.00,
+                    'firstOrder': "",
+                    'discountAmount': 0.00,
+                    'discountPct': "",
+                    'cash': "",
+                    'nets': "",
+                    "change": "",
+                    "checkoutTime": "",
+                    "deposit": "0.00"
+                }
+            };;
             });
         };
 

@@ -18,8 +18,8 @@
 		$scope.currentItems = $scope.platter;
 		$scope.currentOrders = controller.statusModel.table[tableId].currentOrders;
 		$scope.table = tableId;
-		$scope.totalAmount = controller.statusModel.table[tableId].totalAmount;
-		$scope.deposit = controller.statusModel.table[tableId].deposit; 
+		$scope.totalAmount = controller.statusModel.table[tableId].receiptInfo.totalAmount;
+		$scope.deposit = controller.statusModel.table[tableId].receiptInfo.deposit;
 		
 		controller.itemClicked = function($event) {
 			var itemName = $event.currentTarget.id;
@@ -40,7 +40,7 @@
 
 			$scope.totalAmount += item.price;
 			$scope.totalAmount = _.round($scope.totalAmount, 2);
-			controller.statusModel.table[tableId].totalAmount = $scope.totalAmount;
+			controller.statusModel.table[tableId].receiptInfo.totalAmount = $scope.totalAmount;
 			controller.statusModel.table[tableId].currentOrders = $scope.currentOrders;
 		};
 
@@ -144,20 +144,40 @@
 				$scope.totalAmount = _.round($scope.totalAmount, 2);
 				sentEntry[0].remove();
 			});
-			controller.statusModel.table[tableId].totalAmount = $scope.totalAmount;
+			controller.statusModel.table[tableId].receiptInfo.totalAmount = $scope.totalAmount;
+			var payload = {
+				display: controller.statusModel.table[tableId].display,
+				order: controller.statusModel.table[tableId].order,
+				receiptInfo: controller.statusModel.table[tableId].receiptInfo,
+				tableId: $scope.table
+			}
+			$http.post('/void', payload)
+			.then(function successCallback(response) {
+				console.log("done");
+			}, function errorCallback(response) {
+				console.log("error: " + response);
+			});
 		};
 
 		controller.sendClicked = function() {
 			if (_.isEmpty($scope.currentOrders) === true)
 				return;
-			if (controller.statusModel.table[$scope.table].firstOrder === "") {
-				controller.statusModel.table[$scope.table].firstOrder = moment().format('MMMM Do YYYY, HH:mm');
+			if (_.isEmpty(controller.statusModel.table[$scope.table].receiptInfo.display) === true) {
+				controller.statusModel.table[$scope.table].receiptInfo.firstOrder = moment().format('MMMM Do YYYY, HH:mm');
 				controller.statusModel.table[$scope.table].invoiceId = moment().format('YY') + 'A' + moment().format('HHDDmmss');
 			}
 			var displayMessage = {'message': 'Sent on ' + moment().format('HH:mm:ss')};
 			controller.statusModel.table[$scope.table].display.push(_.clone($scope.currentOrders));
 			controller.statusModel.table[$scope.table].display.push(displayMessage);
-			$http.post('/kitchen', _.merge($scope.currentOrders, {'tableId': $scope.table}))
+			var payload = {
+				currentOrders: $scope.currentOrders,
+				tableId: $scope.table,
+				order: controller.statusModel.table[$scope.table].order,
+				display: controller.statusModel.table[$scope.table].display,
+				invoiceId: controller.statusModel.table[$scope.table].invoiceId,
+				receiptInfo: controller.statusModel.table[$scope.table].receiptInfo
+			}
+			$http.post('/kitchen', payload)
 			.then(function successCallback(response) {
 				$scope.currentOrders = {};
 				controller.statusModel.table[tableId].currentOrders = $scope.currentOrders;
@@ -170,8 +190,13 @@
 			return (rowId !== 'message');
 		};
 
+		controller.checkDepositExist = function() {
+			return controller.statusModel.table[$scope.table].receiptInfo.deposit === "0.00";
+		}
+
 		controller.checkoutClicked = function() {
 			var modalInstance = $uibModal.open({
+				animation: false,
                 templateUrl: 'templates/checkoutModal.html',
                 controller: 'checkoutModalController',
                 controllerAs: 'vm',
@@ -192,6 +217,7 @@
 
 		controller.depositClicked = function() {
 			var modalInstance = $uibModal.open({
+				animation: false,
                 templateUrl: 'templates/depositModal.html',
                 controller: 'depositModalController',
                 controllerAs: 'vm',
@@ -206,12 +232,13 @@
                 size: 'md'
             }).result.then(function(data) {
             	$scope.deposit = data;
-            	controller.statusModel.table[$scope.table].deposit = data;
+            	controller.statusModel.table[$scope.table].receiptInfo.deposit = data;
             });
 		};
 
 		controller.transferClicked = function() {
 			var modalInstance = $uibModal.open({
+				animation: false,
                 templateUrl: 'templates/transferModal.html',
                 controller: 'transferModalController',
                 controllerAs: 'vm',
@@ -222,9 +249,21 @@
                 },
                 size: 'lg'
             }).result.then(function(data) {
+            	var oldTable = $scope.table;
+            	var newTable = data;
+            	var payload = {
+            		oldTable: oldTable,
+            		newTable: newTable
+            	}
             	controller.statusModel.table[data] = controller.statusModel.table[$scope.table];
             	controller.statusModel.clearTable($scope.table);
             	$scope.table = data;
+            	$http.post('/transfer', payload)
+				.then(function successCallback(response) {
+					console.log("done");
+				}, function errorCallback(response) {
+					console.log("error: " + response);
+				});
             });
 		};
 	}]);

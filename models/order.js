@@ -21,6 +21,9 @@ module.exports = function () {
 	  },
 	  receiptInfo: {
 	  	type: Sequelize.JSON
+	  },
+	  display: {
+	  	type: Sequelize.JSON
 	  }
 	});
 

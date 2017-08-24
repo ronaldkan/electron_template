@@ -40,7 +40,7 @@
           <div class="col-md-4" style="padding-right: 0px; padding-left: 10px;">
               <div class="panel panel-default" style="margin-bottom: 5px;">
                   <div class="panel-body">
-                    Table: {{table}} <div ng-if="deposit !== '0.00'" class="label label-danger">Deposit: ${{deposit}}</div>
+                    Table: {{table}} <div ng-if="!vm.checkDepositExist()" class="label label-danger">Deposit: ${{deposit}}</div>
                   </div>
               </div>
               <div id="orderList" class="panel panel-default">
