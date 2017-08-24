@@ -16,7 +16,6 @@
             var numChecks = trackingModel.numChecks;
             var cash = trackingModel.cash;
             var nets = trackingModel.nets;
-            console.log("????");
             var payload = {
                 totalSold: totalSold,
                 discount: discount,
