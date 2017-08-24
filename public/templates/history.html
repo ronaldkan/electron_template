@@ -1,0 +1,41 @@
+<div style="padding-top: 60px; background-color: #F2F2F2; height: 100%;">
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col-md-8">
+            <div class="panel panel-default" style="margin-bottom: 10px;">
+                <div class="panel-body text-center">
+                  <span class="pull-left">Receipt: {{display.invoiceId}}</span>
+                  Table:{{display.tableId}}</span> <span class="pull-right">{{display.receiptInfo.printTime}}</span>
+                </div>
+            </div>
+            <div class="panel panel-default logItemList" style="margin-bottom: 10px;">
+              <div class="panel-body">
+                <table class="table">
+                  <tbody>
+                    <tr ng-repeat="(id, value) in display.item">
+                      <td width="10%">{{value.quantity}}</td>
+                      <td width="60%">{{value.name}}</td>
+                      <td width="30%">${{value.price | priceDisplay}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel panel-default" style="margin-bottom: 10px;">
+                <div class="panel-body text-center">
+                  <span class="pull-left">Total Amount: ${{display.receiptInfo.totalAmount}}</span>
+                </div>
+            </div>
+        </div>
+          <div class="col-md-4 logList" style="padding-right: 0px; padding-left: 10px;">
+            <div ng-repeat="log in logs">
+                <div id="{{$index}}" ng-click="vm.onLogClick($event)" class="panel panel-default" style="margin-bottom: 0px;">
+                    <div class="panel-body">
+                      No: <span style="color: red;">{{log.invoiceId}}</span> <span class="pull-right">{{log.receiptInfo.printTime}}</span>
+                    </div>
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

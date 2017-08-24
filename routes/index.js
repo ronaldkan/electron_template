@@ -11,10 +11,54 @@ printer.init({
     port: '9100'
 });
 
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	res.render('index', { title: 'Express' });
+});
+
+router.get('/log', function(req, res, next) {
+	 var responsePromise = Order().findAll({
+		  where: {
+		    isCheckedOut: true
+		  }
+		}).then(function(response){
+			console.log(response);
+			return res.json({'content': response});
+		});
+});
+
+router.post('/eod', function(req, res, next) {
+	var netSales = req.body.totalSold - req.body.discount;
+	var totalSold = req.body.totalSold.toFixed(2);
+	var discount  = req.body.discount.toFixed(2);
+	var numChecks = req.body.numChecks;
+	var cash = req.body.cash;
+	var nets = req.body.nets;
+	printer.alignCenter();
+	printer.println("Sales Report");
+	printer.println("Day of Operation: " + moment().format('MMMM Do YYYY'));
+	printer.println("------------------------------------------");
+	printer.alignLeft();
+	printer.println("Overview");
+	printer.println("Items Sold: $" + totalSold);
+	printer.println("-Discount: $" + discount);
+	printer.println("Net Sales: $" + netSales);
+	printer.println("------------------------------------------");
+	printer.println("Payment breakdown")
+	printer.println("Cash: $" + cash);
+	printer.println("Nets: $" + nets);
+	printer.println("------------------------------------------");
+	printer.println("Printed At: " + moment().format('MMMM Do YYYY, HH:mm'));
+	printer.cut();
+	printer.execute(function(err){
+		if (err) {
+		    console.error("Print failed", err);
+		} else {
+		 console.log("Print done");
+		}
+	});
+	printer.clear();
+	return res.json({'success': 'true'});
 });
 
 router.post('/checkout', function(req, res, next) {
@@ -24,6 +68,11 @@ router.post('/checkout', function(req, res, next) {
 	totalAmount = _.padStart(totalAmount, 7, " ");
 	var invoiceId = req.body.invoiceId;
 	var firstOrder = req.body.firstOrder;
+	var cash = "";
+	var nets = "";
+	var change = "";
+	var discountedAmount = "";
+	var discPct = "";
 	printer.alignCenter();
 	printer.println("Bangkok Street Mookata");
 	printer.println("421 Ang Mo Kio Avenue 10 #01-1149");
@@ -48,7 +97,7 @@ router.post('/checkout', function(req, res, next) {
 		 "       $" + parseFloat(value.price).toFixed(2).toString());
 	});
 	if (_.has(req.body, 'discountedAmount') === true) {
-		var discountedAmount = req.body.discountedAmount;
+		discountedAmount = req.body.discountedAmount;
 		discountedAmount = _.padStart(discountedAmount, 7, " ");
 		printer.alignRight();
 		printer.println("------------------------------------------");
@@ -61,23 +110,24 @@ router.post('/checkout', function(req, res, next) {
 		printer.println("Total: " + totalAmount);
 	}
 	if (_.has(req.body, 'cash') === true && req.body.cash !== 0) {
-		var cash = req.body.cash.toFixed(2);
+		cash = req.body.cash.toFixed(2);
 		cash = _.padStart(cash, 7, " ");
 		printer.println("Cash: " + cash);
 	}
 	if (_.has(req.body, 'nets') === true && req.body.nets !== 0) {
-		var nets = req.body.nets.toFixed(2);
+		nets = req.body.nets.toFixed(2);
 		nets = _.padStart(nets, 7, " ");
 		printer.println("Nets: " + nets);
 	}
 	if (_.has(req.body, 'change') === true && req.body.change !== 0) {
-		var change = req.body.change.toFixed(2);
+		change = req.body.change.toFixed(2);
 		change = _.padStart(change, 7, " ");
 		printer.println("Change: " + change);
 	}
 	printer.println("------------------------------------------")
 	printer.alignCenter();
-	printer.println("Printed at: " + moment().format('MMMM Do YYYY, HH:mm'))
+	var printTime = moment().format('MMMM Do YYYY, HH:mm');
+	printer.println("Printed at: " + printTime);
 	printer.println("Thank you!")
 	printer.cut();
 	printer.execute(function(err){
@@ -88,7 +138,50 @@ router.post('/checkout', function(req, res, next) {
 		}
 	});
 	printer.clear();
-	
+
+	var receiptInfo = {
+		totalAmount: totalAmount,
+		firstOrder: firstOrder,
+		discountedAmount: discountedAmount,
+		discPct: discPct,
+		cash: cash,
+		nets: nets,
+		change: change,
+		printTime: printTime
+	}
+
+	Order().findAll({
+	  where: {
+	    tableId: tableId,
+	    isCheckedOut: false
+	  }
+	})
+	.then(function(data) {
+		if (_.isEmpty(data) == true) {
+			Order().create({
+		    	item: order,
+		    	invoiceId: invoiceId,
+		    	isCheckedOut: true,
+		    	tableId: tableId,
+		    	receiptInfo: receiptInfo
+		  	});
+		} else {
+			var currentItem = data.item;
+			Order().update({
+				item: order,
+				invoiceId: invoiceId,
+				isCheckedOut: true,
+				receiptInfo: receiptInfo
+			}, {
+				where: {
+					tableId: tableId,
+					isCheckedOut: false
+				}
+			});
+
+		}
+	});
+
 	return res.json({'success': 'true'});
 });
 
@@ -151,7 +244,7 @@ router.post('/kitchen', function(req, res,next) {
 	printer.println("------------------------------------------");
 	_.forOwn(_.omit(req.body, ['tableId']), function(value, key) {
 		printer.alignLeft();
-		printer.println(value.secondary, 'GB18030');
+		printer.println("  " + value.quantity + "         " + value.name + " " + value.secondary, 'GB18030');
 	});
 	printer.println("------------------------------------------")
 	printer.alignCenter();
@@ -166,34 +259,34 @@ router.post('/kitchen', function(req, res,next) {
 	});
 	printer.clear();
 
-	// Order().findAll({
-	//   where: {
-	//     tableId: tableId,
-	//     isCheckedOut: false
-	//   }
-	// })
-	// .then(function(data) {
-	// 	if (_.isEmpty(data) == true) {
-	// 		Order().create({
-	// 	    	item: items,
-	// 	    	invoiceId: '421081860',
-	// 	    	isCheckedOut: false,
-	// 	    	tableId: tableId
-	// 	  	});
-	// 	} else {
-	// 		var currentItem = data.item;
-	// 		var newItem = _.merge(data.item, items);
-	// 		Order().update({
-	// 			item: newItem
-	// 		}, {
-	// 			where: {
-	// 				tableId: tableId,
-	// 				isCheckedOut: false
-	// 			}
-	// 		});
+	Order().findAll({
+	  where: {
+	    tableId: tableId,
+	    isCheckedOut: false
+	  }
+	})
+	.then(function(data) {
+		if (_.isEmpty(data) == true) {
+			Order().create({
+		    	item: items,
+		    	invoiceId: '421081860',
+		    	isCheckedOut: false,
+		    	tableId: tableId
+		  	});
+		} else {
+			var currentItem = data.item;
+			var newItem = _.merge(data.item, items);
+			Order().update({
+				item: newItem
+			}, {
+				where: {
+					tableId: tableId,
+					isCheckedOut: false
+				}
+			});
 
-	// 	}
-	// });
+		}
+	});
 	return res.json({'success': 'true'});
 });
 

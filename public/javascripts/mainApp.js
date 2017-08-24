@@ -15,10 +15,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/floor.html'
 	}
 	
-	var checkoutState = {
-		name: 'checkout',
-        url: '/checkout',
-        templateUrl: 'templates/checkout.html'
+	var historyState = {
+		name: 'history',
+        url: '/history',
+        controller: 'historyController',
+        controllerAs: 'vm',
+        templateUrl: 'templates/history.html'
 	}
 
 	var orderState = {
@@ -34,15 +36,26 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
 	$stateProvider.state(adminState);
 	$stateProvider.state(floorState);
-	$stateProvider.state(checkoutState);
+	$stateProvider.state(historyState);
 	$stateProvider.state(orderState);
 	$urlRouterProvider.otherwise('/floor');
 });
 
-app.controller('mainController', ['$scope', '$http', '$state', 'statusModel', function($scope, $http, $state, statusModel) {
+app.controller('mainController', ['$scope', '$http', '$state', 'statusModel', '$uibModal', function($scope, $http, $state, statusModel, $uibModal) {
     var controller = this;
     statusModel.initializeTables();
     controller.barTouch = function() {
         $state.go('floor');
+    };
+
+    controller.endOfDay = function() {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'templates/eodModal.html',
+            controller: 'eodModalController',
+            controllerAs: 'vm',
+            resolve: {
+            },
+            size: 'sm'
+            });
     };
 }]);

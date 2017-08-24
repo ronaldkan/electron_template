@@ -19,9 +19,8 @@ module.exports = function () {
 	  	type: Sequelize.BOOLEAN,
 	  	defaultValue: false
 	  },
-	  isStashed: {
-	  	type:Sequelize.BOOLEAN,
-	  	defaultValue: false
+	  receiptInfo: {
+	  	type: Sequelize.JSON
 	  }
 	});
 

@@ -24,11 +24,14 @@
 	<script type="text/javascript" src="/javascripts/mainApp.js"></script>
 	<script type="text/javascript" src="/javascripts/floorController.js"></script>
 	<script type="text/javascript" src="/javascripts/orderController.js"></script>
+	<script type="text/javascript" src="/javascripts/historyController.js"></script>
 	<script type="text/javascript" src="/javascripts/menuModel.js"></script>
+	<script type="text/javascript" src="/javascripts/trackingModel.js"></script>
 	<script type="text/javascript" src="/javascripts/statusModel.js"></script>
 	<script type="text/javascript" src="/javascripts/checkoutModalController.js"></script>
 	<script type="text/javascript" src="/javascripts/depositModalController.js"></script>
 	<script type="text/javascript" src="/javascripts/transferModalController.js"></script>
+	<script type="text/javascript" src="/javascripts/eodModalController.js"></script>
 	<script>if (window.module) module = window.module;</script>
 	<title>Bing Bing Kaching</title>
 </head>
@@ -39,15 +42,15 @@
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse" id="navbar-collapse-1" style="padding-right: 15px;">
 		<ul class="nav navbar-nav navbar-right">
-			<!-- <li><a ui-sref="admin">Home</a></li> -->
-			<!-- <li><a ui-sref="floor"><i class="fa fa-history" aria-hidden="true"></i></a></li> -->
-			<li class="dropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-gear" aria-hidden="true"></i><!-- <b class="caret"></b> --></a>
+			<li><a ui-sref="history"><i class="fa fa-history" aria-hidden="true"></i></a></li>
+			<li ng-click="ctrl.endOfDay()"><a>End of Day</a></li>
+			<!-- <li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-gear" aria-hidden="true"></i><b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="#">Admin Action</a></li>
 					<li><a href="#">Logout</a></li>
 				</ul>
-			</li>
+			</li> -->
 		</ul>
 	</div>
 </nav>

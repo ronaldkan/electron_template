@@ -1,7 +1,7 @@
 (function () {
     var app = angular.module('mainApp');
 
-    app.controller('checkoutModalController', ['$scope', '$uibModalInstance', 'tableId', 'totalAmount', '$http', 'statusModel', 'deposit', '$state', '$timeout', function ($scope, $uibModalInstance, tableId, totalAmount, $http, statusModel, deposit, $state, $timeout) {
+    app.controller('checkoutModalController', ['$scope', '$uibModalInstance', 'tableId', 'totalAmount', '$http', 'statusModel', 'deposit', '$state', '$timeout', 'trackingModel', function ($scope, $uibModalInstance, tableId, totalAmount, $http, statusModel, deposit, $state, $timeout, trackingModel) {
         
         var controller = this;
         $scope.isKeyPad = true;
@@ -43,6 +43,7 @@
                     $scope.change = parseFloat(currentTotal - $scope.discountedAmount).toFixed(2);
                     info['discountedAmount'] = parseFloat($scope.discountedAmount).toFixed(2);
                     info['discPct'] = $scope.discountPct;
+                    trackingModel.discounts += parseFloat($scope.totalAmount - $scope.discountedAmount);
                 } else {
                     return;
                 }
@@ -57,6 +58,12 @@
             info['cash'] = parseFloat($scope.deposit) + parseFloat($scope.cash);
             info['nets'] = parseFloat($scope.nets);
             info['change'] = parseFloat($scope.change);
+
+            trackingModel.totalSold += parseFloat($scope.totalAmount);
+            trackingModel.cash += info['cash'];
+            trackingModel.nets += info['nets'];
+            trackingModel.numChecks += 1;
+
             $http.post('/checkout', _.merge($scope.currentOrders, info))
             .then(function successCallback(response) {
                 statusModel.clearTable($scope.tableId);

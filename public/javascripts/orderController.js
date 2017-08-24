@@ -7,7 +7,7 @@
         };
     });
 
-	app.controller('orderController', ['$scope', '$http', '$state', '$stateParams', 'menuModel', '$uibModal', 'statusModel', function($scope, $http, $state, $stateParams, menuModel, $uibModal, statusModel) {
+	app.controller('orderController', ['$scope', '$http', '$state', '$stateParams', 'menuModel', '$uibModal', 'statusModel', 'trackingModel', function($scope, $http, $state, $stateParams, menuModel, $uibModal, statusModel, trackingModel) {
 		var controller = this;
 		var tableId = $stateParams.tableId;
 		controller.statusModel = statusModel;
@@ -152,7 +152,7 @@
 				return;
 			if (controller.statusModel.table[$scope.table].firstOrder === "") {
 				controller.statusModel.table[$scope.table].firstOrder = moment().format('MMMM Do YYYY, HH:mm');
-				controller.statusModel.table[$scope.table].invoiceId = moment().format('YY') + 'AMK' + moment().format('HHDDmmss');
+				controller.statusModel.table[$scope.table].invoiceId = moment().format('YY') + 'A' + moment().format('HHDDmmss');
 			}
 			var displayMessage = {'message': 'Sent on ' + moment().format('HH:mm:ss')};
 			controller.statusModel.table[$scope.table].display.push(_.clone($scope.currentOrders));
