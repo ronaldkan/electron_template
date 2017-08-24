@@ -3,7 +3,14 @@ var router = express.Router();
 var _ = require('lodash');
 var moment = require('moment');
 var Order = require('../models/order');
-var escpos = require('escpos');
+var printer = require('node-thermal-printer');
+printer.init({
+    type: 'epson',
+    interface: '/dev/usb/lp0',
+    ip: "192.168.1.148",
+    port: '9100'
+});
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,166 +18,153 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/checkout', function(req, res, next) {
-	var device  = new escpos.Network('192.168.1.148', 9100); 
-	var printer1 = new escpos.Printer(device);
 	var order = req.body.order;
 	var tableId = req.body.tableId;
 	var totalAmount = parseFloat(req.body.totalAmount).toFixed(2);
 	totalAmount = _.padStart(totalAmount, 7, " ");
 	var invoiceId = req.body.invoiceId;
 	var firstOrder = req.body.firstOrder;
-	device.open(function(){
-		printer1
-		.font('a')
-		.align('ct')
-		.size(1, 1)
-		.text("Bangkok Street Mookata")
-		.text("421 Ang Mo Kio Avenue 10 #01-1149")
-		.text("Singapore 560421")
-		.text("------------------------------------------")
-		.align("lt")
-		.text("Table: " + tableId)
-		.text("Receipt: " + invoiceId)
-		.text("Open at: " + firstOrder)
-		.text("------------------------------------------");
-		_.forOwn(order, function(value, key) {
-			var name = value.name;
-			if (name.length < 20) {
-				if (value.price < 10)
-					name = _.padEnd(name, 20, " ");
-				else if (value.price < 100)
-					name = _.padEnd(name, 19, " ");
-				else if (value.price < 1000)
-					name = _.padEnd(name, 18, " ");
-			}
-			printer1
-			.align('lt')
-			.text("  " + value.quantity + "      " + name + "        " + parseFloat(value.price).toFixed(2).toString());
-		});
-		if (_.has(req.body, 'discountedAmount') === true) {
-			var discountedAmount = req.body.discountedAmount;
-			discountedAmount = _.padStart(discountedAmount, 7, " ");
-			printer1
-			.align('rt')
-			.text("------------------------------------------")
-			.text("Subtotal: " + totalAmount)
-			.text("Total(" + req.body.discPct +" off): " + discountedAmount);
-		} else {
-			printer1
-			.align('rt')
-			.text("------------------------------------------")
-			.text("Subtotal: " + totalAmount)
-			.text("Total: " + totalAmount);
+	printer.alignCenter();
+	printer.println("Bangkok Street Mookata");
+	printer.println("421 Ang Mo Kio Avenue 10 #01-1149");
+	printer.println("Singapore 560421");
+	printer.println("------------------------------------------");
+	printer.alignLeft();
+	printer.println("Table: " + tableId);
+	printer.println("Receipt: " + invoiceId);
+	printer.println("Open at: " + firstOrder);
+	printer.println("------------------------------------------");
+	_.forOwn(order, function(value, key) {
+		var name = value.name;
+		if (name.length < 20) {
+			if (value.price < 10)
+				name = _.padEnd(name, 20, " ");
+			else if (value.price < 100)
+				name = _.padEnd(name, 19, " ");
+			else if (value.price < 1000)
+				name = _.padEnd(name, 18, " ");
 		}
-		if (_.has(req.body, 'cash') === true && req.body.cash !== 0) {
-			var cash = req.body.cash.toFixed(2);
-			cash = _.padStart(cash, 7, " ");
-			printer1
-			.text("Cash: " + cash);
-		}
-		if (_.has(req.body, 'nets') === true && req.body.nets !== 0) {
-			var nets = req.body.nets.toFixed(2);
-			nets = _.padStart(nets, 7, " ");
-			printer1
-			.text("Nets: " + nets);
-		}
-		if (_.has(req.body, 'change') === true && req.body.change !== 0) {
-			var change = req.body.change.toFixed(2);
-			change = _.padStart(change, 7, " ");
-			printer1
-			.text("Change: " + change);
-		}
-		printer1
-		.text("------------------------------------------")
-		.align('ct')
-		.text("Printed at: " + moment().format('MMMM Do YYYY, HH:mm'))
-		.text("Thank you!")
-		.flush()
-		.cut('', 5)
-		.close();
+		printer.println("  " + value.quantity + "      " + name +
+		 "       $" + parseFloat(value.price).toFixed(2).toString());
 	});
+	if (_.has(req.body, 'discountedAmount') === true) {
+		var discountedAmount = req.body.discountedAmount;
+		discountedAmount = _.padStart(discountedAmount, 7, " ");
+		printer.alignRight();
+		printer.println("------------------------------------------");
+		printer.println("Subtotal: " + totalAmount)
+		printer.println("Total(" + req.body.discPct +" off): " + discountedAmount);
+	} else {
+		printer.alignRight();
+		printer.println("------------------------------------------");
+		printer.println("Subtotal: " + totalAmount);
+		printer.println("Total: " + totalAmount);
+	}
+	if (_.has(req.body, 'cash') === true && req.body.cash !== 0) {
+		var cash = req.body.cash.toFixed(2);
+		cash = _.padStart(cash, 7, " ");
+		printer.println("Cash: " + cash);
+	}
+	if (_.has(req.body, 'nets') === true && req.body.nets !== 0) {
+		var nets = req.body.nets.toFixed(2);
+		nets = _.padStart(nets, 7, " ");
+		printer.println("Nets: " + nets);
+	}
+	if (_.has(req.body, 'change') === true && req.body.change !== 0) {
+		var change = req.body.change.toFixed(2);
+		change = _.padStart(change, 7, " ");
+		printer.println("Change: " + change);
+	}
+	printer.println("------------------------------------------")
+	printer.alignCenter();
+	printer.println("Printed at: " + moment().format('MMMM Do YYYY, HH:mm'))
+	printer.println("Thank you!")
+	printer.cut();
+	printer.execute(function(err){
+		if (err) {
+		    console.error("Print failed", err);
+		} else {
+		 console.log("Print done");
+		}
+	});
+	printer.clear();
+	
 	return res.json({'success': 'true'});
 });
 
 router.post('/preprint', function(req, res, next) {
-	var device  = new escpos.Network('192.168.1.148', 9100); 
-	var printer1 = new escpos.Printer(device);
 	var order = req.body.order;
 	var tableId = req.body.tableId;
 	var totalAmount = parseFloat(req.body.totalAmount).toFixed(2).toString();
-	device.open(function(){
-		printer1
-		.font('a')
-		.align('ct')
-		.size(1, 1)
-		.text("-PREPRINT-")
-		.text("------------------------------------------")
-		.text("Bangkok Street Mookata")
-		.text("421 Ang Mo Kio Avenue 10 #01-1149")
-		.text("Singapore 560421")
-		.text("------------------------------------------")
-		.align("lt")
-		.text("Table: " + tableId)
-		.text("Receipt: 123142")
-		.text("Open at:")
-		.text("------------------------------------------");
-		_.forOwn(order, function(value, key) {
-			var name = value.name;
-			if (name.length < 20) {
-				if (value.price < 10)
-					name = _.padEnd(name, 20, " ");
-				else if (value.price < 100)
-					name = _.padEnd(name, 19, " ");
-				else if (value.price < 1000)
-					name = _.padEnd(name, 18, " ");
-			}
-			printer1
-			.align('lt')
-			.text("  " + value.quantity + "      " + name + "        " + parseFloat(value.price).toFixed(2).toString());
-		});
-		printer1
-		.align('rt')
-		.text("------------------------------------------")
-		.text("subtotal: " + totalAmount)
-		.text("total: " + totalAmount)
-		.text("------------------------------------------")
-		.align('ct')
-		.text("Printed at: " + moment().format('MMMM Do YYYY, HH:mm'))
-		.text("Thank you!")
-		.flush()
-		.cut('', 5)
-		.close();
+	printer.alignCenter();
+	printer.println("--PREPRINT");
+	printer.println("------------------------------------------")
+	printer.println("Bangkok Street Mookata")
+	printer.println("421 Ang Mo Kio Avenue 10 #01-1149")
+	printer.println("Singapore 560421")
+	printer.println("------------------------------------------")
+	printer.alignLeft();
+	printer.println("Table: " + tableId)
+	printer.println("Receipt: 123142")
+	printer.println("Open at:")
+	printer.println("------------------------------------------");
+	_.forOwn(order, function(value, key) {
+		var name = value.name;
+		if (name.length < 20) {
+			if (value.price < 10)
+				name = _.padEnd(name, 20, " ");
+			else if (value.price < 100)
+				name = _.padEnd(name, 19, " ");
+			else if (value.price < 1000)
+				name = _.padEnd(name, 18, " ");
+		}
+		printer.println("  " + value.quantity + "      " + name +
+		 "       $" + parseFloat(value.price).toFixed(2).toString());
 	});
+	printer.alignRight();
+	printer.println("------------------------------------------")
+	printer.println("subtotal: $" + totalAmount)
+	printer.println("total: $" + totalAmount)
+	printer.println("------------------------------------------")
+	printer.alignCenter();
+	printer.println("Printed at: " + moment().format('MMMM Do YYYY, HH:mm'))
+	printer.println("Thank you!")
+	printer.cut();
+	printer.execute(function(err){
+		if (err) {
+		    console.error("Print failed", err);
+		} else {
+		 console.log("Print done");
+		}
+	});
+	printer.clear();
+
 	return res.json({'success': 'true'});
 });
 
 router.post('/kitchen', function(req, res,next) {
-	var device  = new escpos.Network('192.168.1.148', 9100); 
-	var printer1 = new escpos.Printer(device);
 	var tableId = req.body.tableId;
 	var items = _.omit(req.body, ['tableId']);
-	// device.open(function(){
-	// 	printer1
-	// 	.font('a')
-	// 	.align('ct')
-	// 	.size(1, 2)
-	// 	.text("Table Number: " + tableId)
-	// 	.text("------------------------------------------");
-	// 	_.forOwn(_.omit(req.body, ['tableId']), function(value, key) {
-	// 		printer1
-	// 		.align('lt')
-	// 		.text("  " + value.quantity + "         " + value.name + " " + value.secondary);
-	// 	});
-	// 	printer1
-	// 	.size(1,2)
-	// 	.align('ct')
-	// 	.size(1,1)
-	// 	.text("------------------------------------------")
-	// 	.text("Order Time: " + moment().format('MMMM Do YYYY, HH:mm'))
-	// 	.flush()
-	// 	.cut('', 5)
-	// 	.close();
-	// });
+	printer.alignCenter();
+	printer.setTextDoubleHeight();
+	printer.println("Table: " + tableId);
+	printer.println("------------------------------------------");
+	_.forOwn(_.omit(req.body, ['tableId']), function(value, key) {
+		printer.alignLeft();
+		printer.println(value.secondary, 'GB18030');
+	});
+	printer.println("------------------------------------------")
+	printer.alignCenter();
+	printer.println("Order at: " + moment().format('MMMM Do YYYY, HH:mm'))
+	printer.cut();
+	printer.execute(function(err){
+		if (err) {
+		    console.error("Print failed", err);
+		} else {
+		 console.log("Print done");
+		}
+	});
+	printer.clear();
 
 	// Order().findAll({
 	//   where: {
