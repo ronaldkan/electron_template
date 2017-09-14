@@ -142,9 +142,9 @@
 }
 
 .logList {
-	height: -webkit-calc(100vh - 80px);
-	height: -moz-calc(100vh - 80px);
-	height: calc(100vh - 80px);
+	height: -webkit-calc(100vh - 75px);
+	height: -moz-calc(100vh - 75px);
+	height: calc(100vh - 75px);
 	overflow: auto;
 	background-color: #FFFFFF;
 	box-shadow: 2px 3px 2px -2px #D2D2D2;
@@ -169,6 +169,15 @@
 	background: #990000;
 	color: #FFFFFF;
 	width: 100%;
+}
+
+._720kb-datepicker-calendar-day._720kb-datepicker-today {
+  background:red;
+  color:white;
+}
+
+._720kb-datepicker-calendar-header:nth-child(odd) {
+	background: #990000!important;
 }
 
 

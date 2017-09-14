@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
 var moment = require('moment');
-var Order = require('../models/order');
 var printer = require('node-thermal-printer');
 printer.init({
     type: 'epson',
@@ -27,10 +26,45 @@ router.get('/tables', function(req, res, next) {
 	});
 });
 
-router.get('/log', function(req, res, next) {
+router.get('/drawer', function(req, res, next) {
+	printer.openCashDrawer();
+	printer.execute(function(err){
+		if (err) {
+		    console.error("Print failed", err);
+		} else {
+		 console.log("Print done");
+		}
+	});
+	printer.clear();
+});
+
+router.post('/tracks' , function(req, res, next) {
+	var trackId = req.body.trackId;
+	Track().findAll({
+		where: {
+			trackId: trackId
+		}
+	})
+	.then(function(response){
+		return res.json({'content': response});
+	});
+});
+
+router.post('/log', function(req, res, next) {
+	var filterDate = req.body.filterDate;
+	var date = filterDate.substring(filterDate.length-2, filterDate.length);
+	var date = parseInt(date) + 1;
+	var monthYear = filterDate.substring(0, filterDate.length-2);
+	var nextDay = monthYear + date.toString();
+	var today = new Date(filterDate);
+	var tomorrow = new Date(nextDay);
 	 var responsePromise = Order().findAll({
 		  where: {
-		    isCheckedOut: true
+		    isCheckedOut: true,
+		    createdAt: {
+		    	$lt: tomorrow.setHours(4,0,0,0),
+		    	$gt: today.setHours(16,0,0,0)
+		    }
 		  }
 		}).then(function(response){
 			return res.json({'content': response});
@@ -69,6 +103,45 @@ router.post('/void', function(req, res, next) {
 
 });
 
+router.post('/track', function(req, res, next) {
+	var trackId = req.body.trackId;
+	var totalSold = req.body.totalSold;
+	var discount = req.body.discount;
+	var numTransaction = req.body.numChecks;
+	var cash = req.body.cash;
+	var nets = req.body.nets;
+	Track().findAll({
+	  where: {
+	    trackId: trackId
+	  }
+	})
+	.then(function(data) {
+		if (_.isEmpty(data) == true) {
+			Track().create({
+				trackId:trackId,
+		    	totalSold: totalSold,
+				discount: discount,
+				numTransaction: numTransaction,
+				cash: cash,
+				nets: nets
+		  	});
+		} else {
+			Track().update({
+				totalSold: totalSold,
+				discount: discount,
+				numTransaction: numTransaction,
+				cash: cash,
+				nets: nets
+			}, {
+				where: {
+					trackId: trackId
+				}
+			});
+		}
+	});
+	return res.json({'success': 'true'});
+});
+
 router.post('/transfer', function(req, res, next) {
 	var newTable = req.body.newTable;
 	var oldTable = req.body.oldTable;
@@ -97,12 +170,12 @@ router.post('/transfer', function(req, res, next) {
 });
 
 router.post('/eod', function(req, res, next) {
-	var netSales = req.body.totalSold - req.body.discount;
+	var netSales = parseFloat(req.body.totalSold - req.body.discount).toFixed(2);
 	var totalSold = req.body.totalSold.toFixed(2);
 	var discount  = req.body.discount.toFixed(2);
 	var numChecks = req.body.numChecks;
-	var cash = req.body.cash;
-	var nets = req.body.nets;
+	var cash = parseFloat(req.body.cash).toFixed(2);
+	var nets = parseFloat(req.body.nets).toFixed(2);
 	printer.alignCenter();
 	printer.println("Sales Report");
 	printer.println("Day of Operation: " + moment().format('MMMM Do YYYY'));
@@ -112,6 +185,8 @@ router.post('/eod', function(req, res, next) {
 	printer.println("Items Sold: $" + totalSold);
 	printer.println("-Discount: $" + discount);
 	printer.println("Net Sales: $" + netSales);
+	printer.println("------------------------------------------");
+	printer.println("Number of Transactions: " + numChecks);
 	printer.println("------------------------------------------");
 	printer.println("Payment breakdown")
 	printer.println("Cash: $" + cash);
@@ -140,7 +215,7 @@ router.post('/checkout', function(req, res, next) {
 	var cash = "";
 	var nets = "";
 	var change = "";
-	var discountedAmount = "";
+	var discountAmount = "";
 	var discPct = "";
 	printer.alignCenter();
 	printer.println("Bangkok Street Mookata");
@@ -165,13 +240,14 @@ router.post('/checkout', function(req, res, next) {
 		printer.println("  " + value.quantity + "      " + name +
 		 "       $" + parseFloat(value.price).toFixed(2).toString());
 	});
-	if (_.has(req.body, 'discountedAmount') === true) {
-		discountedAmount = req.body.discountedAmount;
-		discountedAmount = _.padStart(discountedAmount, 7, " ");
+	if (_.has(req.body, 'discountAmount') === true) {
+		discountAmount = req.body.discountAmount;
+		discountAmount = _.padStart(discountAmount, 7, " ");
+		discPct = req.body.discPct;
 		printer.alignRight();
 		printer.println("------------------------------------------");
 		printer.println("Subtotal: " + totalAmount)
-		printer.println("Total(" + req.body.discPct +" off): " + discountedAmount);
+		printer.println("Total(" + discPct +" off): " + discountAmount);
 	} else {
 		printer.alignRight();
 		printer.println("------------------------------------------");
@@ -199,6 +275,7 @@ router.post('/checkout', function(req, res, next) {
 	printer.println("Printed at: " + printTime);
 	printer.println("Thank you!")
 	printer.cut();
+	printer.openCashDrawer();
 	printer.execute(function(err){
 		if (err) {
 		    console.error("Print failed", err);
@@ -209,10 +286,10 @@ router.post('/checkout', function(req, res, next) {
 	printer.clear();
 
 	var receiptInfo = {
-		totalAmount: totalAmount,
+		totalAmount: parseFloat(totalAmount),
 		firstOrder: firstOrder,
-		discountedAmount: discountedAmount,
-		discPct: discPct,
+		discountAmount: parseFloat(discountAmount),
+		discountPct: discPct,
 		cash: cash,
 		nets: nets,
 		change: change,

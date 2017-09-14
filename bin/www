@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('ronpos:server');
+var debug = require('debug')('sharrit_pos:server');
 var http = require('http');
 
 /**
